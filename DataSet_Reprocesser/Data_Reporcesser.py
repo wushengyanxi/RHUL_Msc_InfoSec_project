@@ -5,49 +5,71 @@ import time
 # "ALLFLOWMETER_HIKARI2021.csv"
 # "ALLFLOWMETER_HIKARI2021_simple_version.csv"
 
-def Read_DataBase_File(DataBase_Name):
+def Read_HIKARI2021_File(DataBase_Name):
+    """
+    this function is used to load HIKARI2021 during program running
+    then return feature list and label list of samples in torch.tensor
+    you could get all the samples in HIKARI2021 by combine feature and label
+    feature"unnamed", "uid", "originh","responh" and "traffic_category" will be drop
+    since those feature is no necessary when we just want Determine whether traffic is malignant
     
-    DataBase_Content = []
+
+    Args:
+        DataBase_Name (_String_): this is the name of file which need to be load
+
+    Returns:
+        FeaFeature_tensor(_torch.tensor_): a tensor which contain feature data in each line
+        Label_tensor(_torch.tensor_): a tensor which contain label in each line
+    """
+    Feature = []
+    Label = []
     
     with open(DataBase_Name, newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         
         for row in reader:
             DataBase_CurrentLine = []
+            Current_Sample = []
             for i in row:
                 DataBase_CurrentLine.append(row[i])
+            # drop no necessary feature
             del DataBase_CurrentLine[86]
             del DataBase_CurrentLine[0]
             del DataBase_CurrentLine[0]
             del DataBase_CurrentLine[0]
             del DataBase_CurrentLine[0]
             del DataBase_CurrentLine[1]
-            # 我们在准备数据集的时候，删除掉了原本数据集中的两个IP地址
-            # 在模型训练的过程中，我们只关注恶意与否
-            # 靠IP地址封掉用户，是携带模型的IDS该负责的事
             for i in range(len(DataBase_CurrentLine)):
                 DataBase_CurrentLine[i] = float(DataBase_CurrentLine[i])
-            DataBase_Content.append(DataBase_CurrentLine)
+                # transfer element to float so make easier to transfer to tensor
+            Feature.append(DataBase_CurrentLine[:-1])
+            Label.append([DataBase_CurrentLine[-1]])
+            
     
-    DataBase_Content_tensor = torch.as_tensor(DataBase_Content)
+    Feature_tensor = torch.as_tensor(Feature)
+    Label_tensor = torch.as_tensor(Label)
         
-    return DataBase_Content_tensor
+    return Feature_tensor,Label_tensor
 
-Start_time = time.time()
+#Start_time = time.time()
 
-a = Read_DataBase_File("ALLFLOWMETER_HIKARI2021.csv")
+Feature,Label = Read_HIKARI2021_File("ALLFLOWMETER_HIKARI2021_simple_version.csv")
+
+print(Feature[0])
+print(Label[0])
 
 
-print(type(a))
 
-Endtime = time.time()
 
-timecost = Endtime - Start_time
 
-time_in_minute = timecost/60
 
-time_in_hour = timecost
 
-print("共耗时 ",time_in_minute," 分钟，",time_in_hour," 秒")
 
-print(a.shape)
+
+#print(type(a))
+#Endtime = time.time()
+#timecost = Endtime - Start_time
+#time_in_minute = timecost/60
+#time_in_hour = timecost
+#print("共耗时 ",time_in_minute," 分钟，",time_in_hour," 秒")
+#print(a.shape)
