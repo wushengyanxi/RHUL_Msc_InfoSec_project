@@ -92,14 +92,9 @@ def linreg(Batch,Features_Weight,Bias):
     Returns:
         _torch_tensor_: _result of caculator_
     """
-    #print("Batch:",Batch)
-    #print("Feature weight:",Features_Weight)
-    #print("Bias:",Bias)
     return torch.matmul(Batch,Features_Weight)+Bias
 
 def squared_loss(y_hat, y):
-    #print("y_hat:",y_hat)
-    #print("y.reshape",y.reshape(y_hat.shape))
     return(y_hat - y.reshape(y_hat.shape)) ** 2/2
 
 def sgd(params, lr, batch_size):
@@ -119,10 +114,7 @@ def sgd(params, lr, batch_size):
 
 def Linear_Regression_model(Features,Labels,Learning_rate,Num_epochs,Batch_size):
     Features_Weight = torch.normal(0,0.1,size=(Features.shape[1],1),requires_grad=True)
-    #print("Feature weight:",Features_Weight)
-    # shape of batch will be [Batch_size,2], so w must be [2,1] to follow the rule of metirx multiplication
     Bias = torch.ones(1,requires_grad=True) 
-    #print("Bias:",Bias)
     net = linreg
     loss = squared_loss
     
