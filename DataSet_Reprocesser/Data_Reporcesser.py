@@ -1,6 +1,7 @@
 import csv
 import torch
 import time
+import math
 
 # "ALLFLOWMETER_HIKARI2021.csv"
 # "ALLFLOWMETER_HIKARI2021_simple_version.csv"
@@ -73,9 +74,17 @@ def Read_HIKARI2021_File(DataBase_Name):
         
     return Sample
 
-#Start_time = time.time()
-
 def K_fold(k,Sample):
+    """
+    this function is used to process sample list in multiple folds
+
+    Args:
+        k (_int_): _how many folds we want to divide the samples into_
+        Sample (_list_): _the list of samples_
+
+    Returns:
+        _list_: _a list which contain servel lists/folds of sample_
+    """
     fold_size = len(Sample)//k
     Sample_folds = []
     for x in range(0,k-1):
@@ -89,31 +98,104 @@ def K_fold(k,Sample):
     Sample_folds.append(current_fold)
     
     return Sample_folds
-            
+           
+def Standard_Scalar(X, y):
+    """
+    do standardardization on training set and testing set
+    which means, for each sample in training set
+    find the mean and sd of a feature, value(v) of this feature of all sample: (v-mean)/sd
     
+    for each sample in test set
+    do (v-mean)/sd again, use the mean and sd get from training set for each feature 
 
+    Args:
+        X (_List_): _in Machine Learning, we say X is the training set_
+        y (_List_): _in Machine Learning, we say Y is the testing set_
+            the format of X,y should be:
+            [[[f1,f2...,fn],[label]],[[f1,f2...,fn],[label]],.....，[[f1,f2...,fn],[label]]]
+            each  _[[f1,f2...,fn],[label]]_ is a sample
+    
+    Returns:
+        _List_: _a list of train sample and a list of test sample after standard scalar(with same format as input)_
+    """
+    
+    trainset_mean = []
+    trainset_sd = []
+    
+    for i in range(0,len(X[0][0])):
+    # loop <number of features> times
+        mean = 0
+        sum = 0
+        for j in range(0,len(X)):
+        # loop <number of samples> times
+            sum += X[j][0][i]
+            # same feature in different sample
+        mean = float(sum/len(X))
+        
+        sum_for_sd = 0
+        for j in range(0,len(X)):
+            sum_for_sd += (X[j][0][i]-mean) ** 2
+        sd = math.sqrt((sum_for_sd/len(X)))
+        
+        for n in range(0,len(X)):
+            X[n][0][i] = (X[n][0][i] - mean)/sd
+        
+        trainset_mean.append(mean)
+        trainset_sd.append(sd)
+        
+    for i in range(0,len(y[0][0])):
+        for j in range(0,len(y)):
+            y[j][0][i] = (y[j][0][i] - trainset_mean[i])/trainset_sd[i]
+            # index_j_sample's index_i_feature
+          
+    return X,y
 
+def Normalization(X, y):
+    """
+    this function is used to normalization the sample
+    for a specific feature, find up bound and low bound in all training sample
+    for value(v) of this feature(for both training and testing set): v-low/up-low 
 
+    Args:
+        X (_List_): _in Machine Learning, we say X is the training set_
+        y (_List_): _in Machine Learning, we say Y is the testing set_
+            the format of X,y should be:
+            [[[f1,f2...,fn],[label]],[[f1,f2...,fn],[label]],.....，[[f1,f2...,fn],[label]]]
+            each  _[[f1,f2...,fn],[label]]_ is a sample
 
-
-
-
-
-
-
-def Read_HIKARI2021_File_testcase():
-    '''
-    test case of Read_HIKARI2021
-    '''
-    Sample = Read_HIKARI2021_File("ALLFLOWMETER_HIKARI2021_simple_version.csv")
-    print(Sample[0])
-
-def K_fold_testcase():
-    a = [[1],[2],[3],[4],[5],[6],[7],[8],[9]]
-    b = K_fold(5,a)
-    c = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15]]
-    d = K_fold(4,c)
-    print(b == [[[9],[8]],[[7],[6]],[[5],[4]],[[3],[2]],[[1]]])
-    print(d == [[[15],[14],[13],[12]],[[11],[10],[9],[8]],[[7],[6],[5],[4]],[[3],[2],[1]]])
-
-K_fold_testcase()
+    Returns:
+        _List_: _a list of train sample and a list of test sample after standard scalar(with same format as input)_
+    """
+    Up_Low_Bound = []
+    for i in range(0,len(X[0][0])):
+    # loop <number of feature> times
+        Up_bound = 0
+        for j in range(0,len(X)):
+            if X[j][0][i] > Up_bound:
+            # same feature in different sample
+                Up_bound = X[j][0][i]
+        Lower_bound = Up_bound
+        for j in range(0,len(X)):
+            if X[j][0][i] < Lower_bound:
+                Lower_bound = X[j][0][i]
+        Up_Low_Bound.append([Up_bound,Lower_bound])
+                
+    for i in range(0,len(X[0][0])):
+        for j in range(0,len(X)):
+            if Up_Low_Bound[i][0] != Up_Low_Bound[i][1]:
+            # maybe all the sample get same value in same feature, then up-low = 0
+            # to prevent "n/0" happen, we set this if selection
+                X[j][0][i] = (X[j][0][i] - Up_Low_Bound[i][1])/(Up_Low_Bound[i][0]-Up_Low_Bound[i][1])
+            else:
+                X[j][0][i] = 1
+                
+    for i in range(0,len(y[0][0])):
+        for j in range(0,len(y)):
+            if Up_Low_Bound[i][0] != Up_Low_Bound[i][1]:
+                y[j][0][i] = (y[j][0][i] - Up_Low_Bound[i][1])/(Up_Low_Bound[i][0]-Up_Low_Bound[i][1])
+            else:
+                y[j][0][i] = 1
+    
+    return X,y
+    
+    
