@@ -1,9 +1,9 @@
 import sys
 sys.path.append(r'C:\Users\Razer\Desktop\workingCopy\RHUL_Msc_InfoSec_project')
-from Data_Preporcesser import K_fold
-from Data_Preporcesser import Read_HIKARI2021_File
-from Data_Preporcesser import Standard_Scalar
-from Data_Preporcesser import Normalization
+from Data_Preprocesser import K_fold
+from Data_Preprocesser import Read_HIKARI2021_File
+from Data_Preprocesser import Standard_Scalar
+from Data_Preprocesser import Normalization
          
 def Read_HIKARI2021_File_testcase():
     '''
@@ -44,3 +44,4 @@ def Normalization_testcase():
     print(c)
     print(d)
 
+Normalization_testcase()
