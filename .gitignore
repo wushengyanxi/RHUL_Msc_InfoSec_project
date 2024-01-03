@@ -72,3 +72,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 *.csv
 DataSet_Reprocesser/ALLFLOWMETER_HIKARI2021_simple_version.csv
+DataSet_Reprocesser/ALLFLOWMETER_HIKARI2021_simple_version.csv
