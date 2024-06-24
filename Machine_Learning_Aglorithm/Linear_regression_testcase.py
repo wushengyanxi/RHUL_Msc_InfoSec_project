@@ -12,7 +12,8 @@ feature_list, data = Database_Reader("ALLFLOWMETER_HIKARI2021.csv", full_read=Tr
 for i in range(0,len(data)):
     data[i][0] = 0
     data[i][1] = 0
-
+print("length of features:",len(feature_list))
+print("length of each sample:",len(data[0]))
 print("Features:", feature_list)
 print("Data Sample example:", data[150])
 
@@ -22,8 +23,9 @@ shuffle(data)
 # Data = np.random.rand(550000, 81)  # Uncomment this line for actual testing
 
 # Data preprocessing
-X, y, numeric_features = preprocess_data(data)
-
+X, y, numeric_features, scale_factors = preprocess_data(data, feature_list)
+print("the scale of those factors are: ", scale_factors)
+print("length of scale_factors:", len(scale_factors))
 # Print the shape of the preprocessed data
 print("Shape of X:", X.shape)
 print("Shape of y:", y.shape)
@@ -32,13 +34,14 @@ print("Shape of y:", y.shape)
 weights = train_linear_regression(X, y, numeric_features, feature_list,5)
 
 # Print weights
+print("length of samples:", len(weights))
 print("Weights:", weights)
-print(len(weights))
+
 
 sample_amount = len(data)
 correct_predict = 0
-for x in range(0,len(data)):
-    predict_label = linear_regression_predict(feature_list, weights, data[x])
+for x in range(0, len(data)):
+    predict_label = linear_regression_predict(feature_list, weights, data[x], scale_factors)
     if predict_label == data[x][-1]:
         correct_predict += 1
     if x%50000 == 0:

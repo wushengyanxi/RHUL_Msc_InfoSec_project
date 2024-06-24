@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 
 
-def preprocess_data(Data):
+def preprocess_data(Data, features_list):
     """
     Preprocesses the input data for machine learning tasks by converting all
     features to numeric format, handling missing values, and standardizing the features.
@@ -68,7 +68,10 @@ def preprocess_data(Data):
     y = numeric_data[:, -1].reshape(-1, 1)
     X = scaler.fit_transform(X)
 
-    return X, y, numeric_features
+    # Get scale factors for each feature
+    scale_factors = [[features_list[i], 1 / scaler.scale_[i]] for i in numeric_features]
+
+    return X, y, numeric_features, scale_factors
 
 
 class LinearRegressionModel(nn.Module):
@@ -128,14 +131,17 @@ def train_linear_regression(X, y, numeric_features, feature_list, epochs=10000, 
     return result
 
 
-def linear_regression_predict(features, weights, sample):
+def linear_regression_predict(features, weights, sample, scale_factors):
     # sample = preprocess_data(sample) 这些数据需要被初始化
     predict_score = 0
     predict_label = 0
     for n in range(0,len(features)):
-        if features[n] in weights and type(sample[n]) == int or type(sample[n]) == float:
-            predict_score += sample[n] * weights[features[n]]
-    if predict_label >= 0.5:
+        index = next((i for i, sublist in enumerate(scale_factors) if sublist[0] == features[n]), -1)
+        if index != -1:
+            sample[n] = sample[n]*scale_factors[index][1]
+            predict_score += sample[n]*weights[features[n]]
+
+    if predict_score >= 0.5:
         predict_label = 1
 
     return predict_label
