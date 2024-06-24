@@ -106,7 +106,7 @@ def train_linear_regression(X, y, numeric_features, feature_list, epochs=10000, 
         optimizer.step()
 
         # Print loss for every 100 epochs
-        if (epoch + 1) % 100 == 0:
+        if (epoch + 1) % 2 == 0:
             print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
 
     end_time = time.time()
@@ -119,8 +119,28 @@ def train_linear_regression(X, y, numeric_features, feature_list, epochs=10000, 
     result = {feature_list[i]: 0.0 for i in range(len(feature_list))}
     for i, feature in enumerate(numeric_features):
         result[feature_list[feature]] = weights[i]
-
+    '''
+    # Create result list
+    result = []
+    for i in range(len(weights)):
+        result.append([feature_list[i], float(weights[i])])
+    '''
     return result
+
+
+def linear_regression_predict(features, weights, sample):
+    # sample = preprocess_data(sample) 这些数据需要被初始化
+    predict_score = 0
+    predict_label = 0
+    for n in range(0,len(features)):
+        if features[n] in weights and type(sample[n]) == int or type(sample[n]) == float:
+            predict_score += sample[n] * weights[features[n]]
+    if predict_label >= 0.5:
+        predict_label = 1
+
+    return predict_label
+
+
 
 '''
 预处理数据函数 (preprocess_data)：
