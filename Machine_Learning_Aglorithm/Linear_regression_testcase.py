@@ -16,6 +16,7 @@ print("length of features:",len(feature_list))
 print("length of each sample:",len(data[0]))
 print("Features:", feature_list)
 print("Data Sample example:", data[150])
+print("type of Data Sample example:", type(data[150]))
 
 shuffle(data)
 
