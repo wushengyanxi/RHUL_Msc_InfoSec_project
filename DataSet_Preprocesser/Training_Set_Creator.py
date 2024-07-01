@@ -58,31 +58,37 @@ def Training_set_create(Background=2000, Benign=10000, Bruteforce_XML=2000, Brut
     Background_Data = df_Background.to_numpy().tolist()
     shuffle(Background_Data)
     Background_Data_trimmed_list = Background_Data[:Background]
+    Background_TestingSet = Background_Data[Background:]
 
     df_Benign = pd.read_csv(file_path_Benign)
     Benign_Data = df_Benign.to_numpy().tolist()
     shuffle(Benign_Data)
     Benign_Data_trimmed_list = Benign_Data[:Benign]
+    Benign_TestingSet = Benign_Data[Benign:]
 
     df_Bruteforce_XML = pd.read_csv(file_path_Bruteforce_XML)
     Bruteforce_XML_Data = df_Bruteforce_XML.to_numpy().tolist()
     shuffle(Bruteforce_XML_Data)
     Bruteforce_XML_Data_trimmed_list = Bruteforce_XML_Data[:Bruteforce_XML]
+    Bruteforce_XML_TestingSet = Bruteforce_XML_Data[Bruteforce_XML:]
 
     df_Bruteforce = pd.read_csv(file_path_Bruteforce)
     Bruteforce_Data = df_Bruteforce.to_numpy().tolist()
     shuffle(Bruteforce_Data)
     Bruteforce_Data_trimmed_list = Bruteforce_Data[:Bruteforce]
+    Bruteforce_TestingSet = Bruteforce_Data[Bruteforce:]
 
     df_Probing = pd.read_csv(file_path_Probing)
     Probing_Data = df_Probing.to_numpy().tolist()
     shuffle(Probing_Data)
     Probing_Data_trimmed_list = Probing_Data[:Probing]
+    Probing_TestingSet = Probing_Data[Probing:]
 
     df_XMRIGCC_CryptoMiner = pd.read_csv(file_path_XMRIGCC_CryptoMiner)
     XMRIGCC_CryptoMiner_Data = df_XMRIGCC_CryptoMiner.to_numpy().tolist()
     shuffle(XMRIGCC_CryptoMiner_Data)
     XMRIGCC_CryptoMiner_Data_trimmed_list = XMRIGCC_CryptoMiner_Data[:XMRIGCC_CryptoMiner]
+    XMRIGCC_CryptoMiner_TestingSet = XMRIGCC_CryptoMiner_Data[XMRIGCC_CryptoMiner:]
 
     # print(column_names)
     # print(Bruteforce_XML_Data[150])
@@ -92,9 +98,12 @@ def Training_set_create(Background=2000, Benign=10000, Bruteforce_XML=2000, Brut
                          Bruteforce_Data_trimmed_list + Probing_Data_trimmed_list +
                          XMRIGCC_CryptoMiner_Data_trimmed_list)
 
-    return features_name, training_Data_Set
+    testing_Data_Set = [Background_TestingSet, Benign_TestingSet, Bruteforce_XML_TestingSet, Bruteforce_TestingSet,
+                        Probing_TestingSet, XMRIGCC_CryptoMiner_TestingSet]
+
+    return features_name, training_Data_Set, testing_Data_Set
 
 
-Features_name, Training_Data_Set = Training_set_create()
+Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create()
 print("the features list is: ", Features_name)
 print("one of the sample in training set is: ", Training_Data_Set[0])

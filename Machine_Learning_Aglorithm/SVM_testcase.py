@@ -13,10 +13,10 @@ print("Data Sample:", data[0])
 # Data = np.random.rand(550000, 81)  # Uncomment this line for actual testing
 
 # Data preprocessing
-X, y, numeric_features = preprocess_data(data)
+X, y, numeric_features, scale_factors = preprocess_data(data, feature_list)
 
 # Print the shape of the preprocessed data
 print("Shape of X:", X.shape)
 print("Shape of y:", y.shape)
 
-print(train_svm(feature_list, data))
+print(train_svm(feature_list, data,100))

@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 
 
-def preprocess_data(Data):
+def preprocess_data(Data, features_list):
     """
     Preprocesses the input data for machine learning tasks by converting all
     features to numeric format, handling missing values, and standardizing the features.
@@ -62,8 +62,9 @@ def preprocess_data(Data):
     X = numeric_data[:, :-1]
     y = numeric_data[:, -1].reshape(-1, 1)
     X = scaler.fit_transform(X)
+    scale_factors = [[features_list[i], 1 / scaler.scale_[i]] for i in numeric_features]
 
-    return X, y, numeric_features
+    return X, y, numeric_features, scale_factors
 
 
 class SVM(nn.Module):
@@ -127,7 +128,7 @@ def train_svm(feature_list, Data, epochs=10000, learning_rate=0.001, C=1.0):
     Raises:
         ValueError: If all values in a column are NaN or infinite.
     """
-    X, y, numeric_features = preprocess_data(Data)
+    X, y, numeric_features, scale_factors = preprocess_data(Data, feature_list)
 
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)

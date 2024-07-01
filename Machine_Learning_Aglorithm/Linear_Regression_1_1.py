@@ -135,17 +135,23 @@ def linear_regression_predict(features, weights, sample, scale_factors):
     # sample = preprocess_data(sample) 这些数据需要被初始化
     predict_score = 0
     predict_label = 0
-    for n in range(0,len(features)):
+    for n in range(0, len(features)):
         index = next((i for i, sublist in enumerate(scale_factors) if sublist[0] == features[n]), -1)
         if index != -1:
-            sample[n] = sample[n]*scale_factors[index][1]
-            predict_score += sample[n]*weights[features[n]]
+            sample[n] = sample[n] * scale_factors[index][1]
+            predict_score += sample[n] * weights[features[n]]
 
     if predict_score >= 0.5:
         predict_label = 1
 
     return predict_label
 
+
+def one_step_LR(Data, feature_list, epochs=10000, learning_rate=0.001):
+    X, y, numeric_features, scale_factors = preprocess_data(Data, feature_list)
+    weight_result = train_linear_regression(X, y, numeric_features, feature_list, epochs, learning_rate)
+
+    return scale_factors, weight_result
 
 
 '''

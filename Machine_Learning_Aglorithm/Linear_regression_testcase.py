@@ -6,9 +6,10 @@ from Data_Reader import Database_Reader
 from Linear_Regression_1_1 import train_linear_regression
 from Linear_Regression_1_1 import preprocess_data
 from Linear_Regression_1_1 import linear_regression_predict
+from Linear_Regression_1_1 import one_step_LR
 
 feature_list, data = Database_Reader("ALLFLOWMETER_HIKARI2021.csv", full_read=True, traffic_category=False)
-
+'''
 for i in range(0,len(data)):
     data[i][0] = 0
     data[i][1] = 0
@@ -55,3 +56,8 @@ for x in range(0, len(data)):
 
 correct_rate = correct_predict/sample_amount
 print("the correct rate of predict is: ", correct_rate)
+'''
+
+s, w = one_step_LR(data, feature_list,300)
+print(s)
+print(w)
