@@ -51,7 +51,7 @@ def decision_process(proc_id, share_data, lock):
 
         with lock:
             final_flag = share_data['final_analysis'].value
-        if final_flag > 10:
+        if final_flag > 3:
             sys.exit()
 
         try:
@@ -96,12 +96,12 @@ def load_adjustment_process():
     '''
 
 
-def parameter_update_process(share_data):
+def parameter_update_process(share_data, lock):
     while True:
         final_flag = share_data['final_analysis'].value
-        if final_flag > 10:
+        if final_flag > 3:
             print("周期性模拟结束")
-            all_decision = list(share_data[decision_record])
+            all_decision = list(share_data['decision_record'])
             count = 0
             for each_decision in all_decision:
                 if each_decision[0] == each_decision[1]:
@@ -113,19 +113,23 @@ def parameter_update_process(share_data):
 
         if len(share_data['sample_buffer']) >= share_data['buffer_limit'].value:
             share_data['sample_to_be_written'].extend(share_data['sample_buffer'])
-            share_data['sample_buffer'].clear()
+            share_data['sample_buffer'][:] = []
 
             with open('IDS_traffic_log.txt', 'a') as file:
                 for sample in share_data['sample_to_be_written']:
                     file.write(','.join(map(str, sample)) + '\n')
 
-            share_data['sample_to_be_written'].clear()
+            share_data['sample_to_be_written'][:] = []
             new_features_list, new_training_data_set = read_log_file()
             share_data['Features_List'][:] = new_features_list
             share_data['Training_Data_Set'][:] = new_training_data_set
 
             share_data['scale_weight'][:] = Ensemble_Learning_Training(list(share_data['Features_List']),
                                                                        list(share_data['Training_Data_Set']))
+        print("成功在 parameter_update_process 中更新了一次权重参数")
+        with lock:
+            share_data['final_analysis'].value += 1
+
         time.sleep(10)
 
 
@@ -145,7 +149,7 @@ if __name__ == '__main__':
         'Features_List': manager.list(),
         'Training_Data_Set': manager.list(),
         'Testing_Data_Set': manager.list(),
-        'buffer_limit': manager.Value('i', 10000),
+        'buffer_limit': manager.Value('i', 1000),
         'final_analysis': manager.Value('i', 0)
     })
 
@@ -197,7 +201,7 @@ if __name__ == '__main__':
 
 
     # 启动负载调整进程和参数更新进程
-    parameter_update = multiprocessing.Process(target=parameter_update_process, args=(shared_data,))
+    parameter_update = multiprocessing.Process(target=parameter_update_process, args=(shared_data, Lock))
     processes.append(parameter_update)
 
     for i in range(0, len(processes)):
