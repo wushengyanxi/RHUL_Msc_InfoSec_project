@@ -4,7 +4,7 @@ from random import shuffle
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
 from Data_Reader import Database_Reader
 from Linear_Regression_1_1 import train_linear_regression
-from Linear_Regression_1_1 import preprocess_data
+from Linear_Regression_1_1 import LR_preprocess_data
 from Linear_Regression_1_1 import linear_regression_predict
 from Linear_Regression_1_1 import one_step_LR
 

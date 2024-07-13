@@ -10,6 +10,7 @@ sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\IDS_Structure'
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
 from Training_Set_Creator import Training_set_create
 from Get_Training_Result import Ensemble_Learning_Training
+from Get_Training_Result import Ensemble_Learning_Decision
 
 
 def initialize_log_file(features_list, training_data_set):
@@ -36,10 +37,7 @@ def read_log_file():
     return new_features_list, new_training_data_set
 
 
-def Ensemble_Learning_Decision(a, b):
-    return 1
-
-def decision_process(proc_id, shared_data):
+def decision_process(proc_id, share_data, lock):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_address = ("127.0.0.1", 8081 + proc_id)
@@ -50,26 +48,35 @@ def decision_process(proc_id, shared_data):
 
     while True:
         conn, client_address = server_socket.accept()
+
+        with lock:
+            final_flag = share_data['final_analysis'].value
+        if final_flag > 10:
+            sys.exit()
+
         try:
             data = conn.recv(4096)
             print(f"Connection from {client_address} in process {proc_id}")
             user_traffic = pickle.loads(data)
-            scale_weight = list(shared_data["scale_weight"])
-            sample_decision = Ensemble_Learning_Decision(user_traffic[1], scale_weight)
-            shared_data['sample_buffer'].append(sample_decision)
+
+            with lock:
+                print(f"Decision process {proc_id} try to access the value of scale weight")
+                scale_weight = list(share_data["scale_weight"])
+                features_list = list(share_data["Features_List"])
+                print(f"Decision process {proc_id} access the value of scale weight successful")
+                print(scale_weight)
+
+            sample_decision = Ensemble_Learning_Decision(scale_weight, user_traffic[1], features_list)
+
+            with lock:
+                share_data['decision_record'].append([sample_decision, user_traffic[1][-1]])
+                user_traffic[1][-1] = sample_decision
+                share_data['sample_buffer'].append(user_traffic[1])
+                print("代码确实成功执行过")
+        except TypeError as e:
+            continue
         finally:
             conn.close()
-
-'''
-
-def start_decision_processes(num_processes, shared_data):
-    processes = []
-    for i in range(num_processes):
-        proc = multiprocessing.Process(target=decision_process, args=(i, shared_data))
-        proc.start()
-        processes.append(proc)
-    return processes
-'''
 
 
 def load_adjustment_process():
@@ -88,22 +95,37 @@ def load_adjustment_process():
         time.sleep(100)
     '''
 
-def parameter_update_process():
+
+def parameter_update_process(share_data):
     while True:
-        if len(shared_data['sample_buffer']) >= buffer_limit:
-            shared_data['sample_to_be_written'].extend(shared_data['sample_buffer'])
-            shared_data['sample_buffer'].clear()
+        final_flag = share_data['final_analysis'].value
+        if final_flag > 10:
+            print("周期性模拟结束")
+            all_decision = list(share_data[decision_record])
+            count = 0
+            for each_decision in all_decision:
+                if each_decision[0] == each_decision[1]:
+                    count = count + 1
+            decision_times = len(all_decision)
+            correct_rate = count/decision_times
+            print("模型的最终正确率是", correct_rate)
+            sys.exit()
+
+        if len(share_data['sample_buffer']) >= share_data['buffer_limit'].value:
+            share_data['sample_to_be_written'].extend(share_data['sample_buffer'])
+            share_data['sample_buffer'].clear()
 
             with open('IDS_traffic_log.txt', 'a') as file:
-                for sample in shared_data['sample_to_be_written']:
+                for sample in share_data['sample_to_be_written']:
                     file.write(','.join(map(str, sample)) + '\n')
 
-            shared_data['sample_to_be_written'].clear()
+            share_data['sample_to_be_written'].clear()
             new_features_list, new_training_data_set = read_log_file()
-            shared_data['Features_List'][:] = new_features_list
-            shared_data['Training_Data_Set'][:] = new_training_data_set
+            share_data['Features_List'][:] = new_features_list
+            share_data['Training_Data_Set'][:] = new_training_data_set
 
-            shared_data['scale_weight'][:] = Ensemble_Lrarning_Training(shared_data['Features_List'], shared_data['Training_Data_Set'])
+            share_data['scale_weight'][:] = Ensemble_Learning_Training(list(share_data['Features_List']),
+                                                                       list(share_data['Training_Data_Set']))
         time.sleep(10)
 
 
@@ -111,26 +133,33 @@ def testcase(param):
     List = list(param['Features_List'])
     print("test case", List)
 
+
 if __name__ == '__main__':
+    Lock = multiprocessing.Lock()
     manager = multiprocessing.Manager()
     shared_data = manager.dict({
         'sample_buffer': manager.list(),
+        'decision_record': manager.list(),
         'sample_to_be_written': manager.list(),
         'scale_weight': manager.list(),
         'Features_List': manager.list(),
         'Training_Data_Set': manager.list(),
-        'Testing_Data_Set': manager.list()
+        'Testing_Data_Set': manager.list(),
+        'buffer_limit': manager.Value('i', 10000),
+        'final_analysis': manager.Value('i', 0)
     })
 
     Features_List, Training_Data_Set, Testing_Data_Set = Training_set_create()
     print("Training data set has sample amount: ", len(Training_Data_Set))
     print("Testing data set sample amount: ", len(Testing_Data_Set))
-    scale_weight = []
+    Scale_Weight = Ensemble_Learning_Training(Features_List, Training_Data_Set)
+    Decision_Record = []
 
     shared_data['Features_List'][:] = Features_List
     shared_data['Training_Data_Set'][:] = Training_Data_Set
     shared_data['Testing_Data_Set'][:] = Testing_Data_Set
-    shared_data['scale_weight'][:] = scale_weight
+    shared_data['scale_weight'][:] = Scale_Weight
+    shared_data['decision_record'][:] = Decision_Record
 
     Testing_Data_Sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
     Testing_Data_Sender.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -161,8 +190,8 @@ if __name__ == '__main__':
 
     processes = []
 
-    for i in range(0,num_processes):
-        proc = multiprocessing.Process(target=decision_process, args=(i, shared_data))
+    for i in range(0, num_processes):
+        proc = multiprocessing.Process(target=decision_process, args=(i, shared_data, Lock))
         processes.append(proc)
 
 
@@ -171,7 +200,7 @@ if __name__ == '__main__':
     parameter_update = multiprocessing.Process(target=parameter_update_process, args=(shared_data,))
     processes.append(parameter_update)
 
-    for i in range(0,len(processes)):
+    for i in range(0, len(processes)):
         processes[i].start()
 
     for proc in processes:

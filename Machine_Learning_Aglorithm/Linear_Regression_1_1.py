@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 
 
-def preprocess_data(Data, features_list):
+def LR_preprocess_data(Data, features_list):
     """
     Preprocesses the input data for machine learning tasks by converting all
     features to numeric format, handling missing values, and standardizing the features.
@@ -148,7 +148,7 @@ def linear_regression_predict(features, weights, sample, scale_factors):
 
 
 def one_step_LR(Data, feature_list, epochs=10000, learning_rate=0.001):
-    X, y, numeric_features, scale_factors = preprocess_data(Data, feature_list)
+    X, y, numeric_features, scale_factors = LR_preprocess_data(Data, feature_list)
     weight_result = train_linear_regression(X, y, numeric_features, feature_list, epochs, learning_rate)
 
     return scale_factors, weight_result
