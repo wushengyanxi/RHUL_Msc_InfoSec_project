@@ -64,7 +64,7 @@ def decision_process(proc_id, share_data, lock):
                 scale_weight = list(share_data["scale_weight"])
                 features_list = list(share_data["Features_List"])
                 print(f"Decision process {proc_id} access the value of scale weight successful")
-                print(scale_weight)
+                # print(scale_weight)
 
             sample_decision = Ensemble_Learning_Decision(scale_weight, user_traffic[1], features_list)
 
@@ -136,9 +136,31 @@ def parameter_update_process(share_data, lock):
         time.sleep(10)
 
 
-def testcase(param):
-    List = list(param['Features_List'])
-    print("test case", List)
+def send_test_set(share_data):
+    Testing_Data_Sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+    Testing_Data_Sender.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    Testing_Data_Sender.bind(("127.0.0.1", 8081))
+    Testing_Data_Sender.listen(2)
+
+    print("Data pre-load successful, currently sending testing set to client script")
+
+    Client_Main_Socket, Client_Main_Socket_address = Testing_Data_Sender.accept()
+    Shake_Hand_message = Client_Main_Socket.recv(1024)
+    print(Client_Main_Socket_address, Shake_Hand_message)
+
+    normal_Features_List = list(share_data['Features_List'])
+    normal_Testing_Data_Set = list(share_data['Testing_Data_Set'])
+    Testing_Data_Packet = pickle.dumps([normal_Features_List, normal_Testing_Data_Set])
+
+    chunk_size = 40960
+
+    for i in range(0, len(Testing_Data_Packet), chunk_size):
+        Client_Main_Socket.send(Testing_Data_Packet[i:i + chunk_size])
+        Transfer_progress = i / len(Testing_Data_Packet) * 100
+        print("current transfer progress is: ", Transfer_progress)
+    print("Testing data set transmission done")
+    Client_Main_Socket.close()
+    Testing_Data_Sender.close()
 
 
 if __name__ == '__main__':
@@ -167,32 +189,7 @@ if __name__ == '__main__':
     shared_data['Testing_Data_Set'][:] = Testing_Data_Set
     shared_data['scale_weight'][:] = Scale_Weight
     shared_data['decision_record'][:] = Decision_Record
-    '''
-    Testing_Data_Sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
-    Testing_Data_Sender.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    Testing_Data_Sender.bind(("127.0.0.1", 8081))
-    Testing_Data_Sender.listen(2)
-
-    print("Data pre-load successful, currently sending testing set to client script")
-
-    Client_Main_Socket, Client_Main_Socket_address = Testing_Data_Sender.accept()
-    Shake_Hand_message = Client_Main_Socket.recv(1024)
-    print(Shake_Hand_message)
-
-    normal_Features_List = list(shared_data['Features_List'])
-    normal_Testing_Data_Set = list(shared_data['Testing_Data_Set'])
-    Testing_Data_Packet = pickle.dumps([normal_Features_List, normal_Testing_Data_Set])
-
-    chunk_size = 40960
-
-    for i in range(0, len(Testing_Data_Packet), chunk_size):
-        Client_Main_Socket.send(Testing_Data_Packet[i:i + chunk_size])
-        Transfer_progress = i / len(Testing_Data_Packet) * 100
-        print("current transfer progress is: ", Transfer_progress)
-    print("Testing data set transmission done")
-    Client_Main_Socket.close()
-    Testing_Data_Sender.close()
-    '''
+    # send_test_set(shared_data)
 
     num_processes = 10  # 可以调整的参数
 

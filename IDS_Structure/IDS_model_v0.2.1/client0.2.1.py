@@ -3,55 +3,10 @@ import pickle
 import threading
 import random
 import time
+import sys
 
-Client_Main_Socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
-Client_Main_Socket.connect(("127.0.0.1", 8081))
-
-Shake_Hand_Message = "Client main procedure starting..."
-
-Client_Main_Socket.send(Shake_Hand_Message.encode("utf-8"))
-Testing_Data_Packet = b''
-
-print("Start receving test set from server......")
-while True:
-    Packet = Client_Main_Socket.recv(40960)
-    if not Packet:
-        break
-    Testing_Data_Packet += Packet
-
-Recv_Data = pickle.loads(Testing_Data_Packet)
-Features_List = Recv_Data[0]
-Testing_Data_Set = Recv_Data[1]
-Client_Main_Socket.close()
-
-'''
-print(Features_List)
-Amount_Of_Testing_Set = 0
-for i in range(0,6):
-    Amount_Of_Testing_Set += len(Testing_Data_Set[i])
-print(Amount_Of_Testing_Set)
-'''
-
-# 上方代码仅用于在客户端与服务器初始化时传递testing set用
-
-Background_TestingSet = Testing_Data_Set[0]
-Benign_TestingSet = Testing_Data_Set[1]
-Bruteforce_XML_TestingSet = Testing_Data_Set[2]
-Bruteforce_TestingSet = Testing_Data_Set[3]
-Probing_TestingSet = Testing_Data_Set[4]
-XMRIGCC_CryptoMiner_TestingSet = Testing_Data_Set[5]
-
-Sample_dict = {
-    "Background": Background_TestingSet,
-    "Benign": Benign_TestingSet,
-    "Bruteforce_XML": Bruteforce_XML_TestingSet,
-    "Bruteforce": Bruteforce_TestingSet,
-    "Probing": Probing_TestingSet,
-    "XMRIGCC": XMRIGCC_CryptoMiner_TestingSet
-}
-
-Amount_and_types = [[50, "Benign"]]
-Client_Script_Threads = []
+sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
+from Training_Set_Creator import Training_set_create
 
 
 def user_Strategy():
@@ -121,6 +76,62 @@ def multi_client_script_thread():
 
     for thread in Client_Script_Threads:
         thread.start()
+
+def receive_test_set():
+    Client_Main_Socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+    Client_Main_Socket.connect(("127.0.0.1", 8081))
+
+    Shake_Hand_Message = "Client main procedure starting..."
+
+    Client_Main_Socket.send(Shake_Hand_Message.encode("utf-8"))
+    Testing_Data_Packet = b''
+
+    print("Start receving test set from server......")
+    while True:
+        Packet = Client_Main_Socket.recv(40960)
+        if not Packet:
+            break
+        Testing_Data_Packet += Packet
+
+    Recv_Data = pickle.loads(Testing_Data_Packet)
+    Features_List = Recv_Data[0]
+    Testing_Data_Set = Recv_Data[1]
+    Client_Main_Socket.close()
+    
+    return Features_List, Testing_Data_Set
+
+# Features_List, Testing_Data_Set = receive_test_set()
+
+Features_List, Training_Data_Set, Testing_Data_Set = Training_set_create()
+
+'''
+print(Features_List)
+Amount_Of_Testing_Set = 0
+for i in range(0,6):
+    Amount_Of_Testing_Set += len(Testing_Data_Set[i])
+print(Amount_Of_Testing_Set)
+'''
+
+# 上方代码仅用于在客户端与服务器初始化时传递testing set用
+
+Background_TestingSet = Testing_Data_Set[0]
+Benign_TestingSet = Testing_Data_Set[1]
+Bruteforce_XML_TestingSet = Testing_Data_Set[2]
+Bruteforce_TestingSet = Testing_Data_Set[3]
+Probing_TestingSet = Testing_Data_Set[4]
+XMRIGCC_CryptoMiner_TestingSet = Testing_Data_Set[5]
+
+Sample_dict = {
+    "Background": Background_TestingSet,
+    "Benign": Benign_TestingSet,
+    "Bruteforce_XML": Bruteforce_XML_TestingSet,
+    "Bruteforce": Bruteforce_TestingSet,
+    "Probing": Probing_TestingSet,
+    "XMRIGCC": XMRIGCC_CryptoMiner_TestingSet
+}
+
+Amount_and_types = [[50, "Benign"]]
+Client_Script_Threads = []
 
 
 multi_client_script_thread()
