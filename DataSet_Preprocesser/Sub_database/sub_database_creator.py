@@ -24,7 +24,8 @@ def split_and_save_csv(df, output_dir):
 
 
 def main():
-    input_file_path = r"C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser\ALLFLOWMETER_HIKARI2021.csv"
+    input_file_path = (r"C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser\ALLFLOWMETER_HIKARI2021"
+                       r".csv")
     output_dir = r"C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser\Sub_database"
 
     if not os.path.exists(output_dir):

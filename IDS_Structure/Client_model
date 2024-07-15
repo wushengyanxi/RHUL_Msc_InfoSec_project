@@ -1,0 +1,42 @@
+import socket
+import threading
+import time
+import random
+
+class Client:
+    def __init__(self, id, server_ip, server_port, send_frequency, data_amount):
+        self.id = id
+        self.server_ip = server_ip
+        self.server_port = server_port
+        self.send_frequency = send_frequency
+        self.data_amount = data_amount
+
+    def send_data(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+            client_socket.connect((self.server_ip, self.server_port))
+            print(f'Client {self.id} connected to the server.')
+            while True:
+                try:
+                    message = f"Client {self.id} data: {random.randint(0, 100)}"
+                    client_socket.send(message.encode())
+                    print(f'Client {self.id} sent: {message}')
+                    time.sleep(self.send_frequency)
+                except:
+                    break
+
+def start_clients(client_count):
+    clients = []
+    for i in range(client_count):
+        send_frequency = random.uniform(0.5, 2)
+        data_amount = random.randint(1, 10)
+        client = Client(i, '127.0.0.1', 8888, send_frequency, data_amount)
+        client_thread = threading.Thread(target=client.send_data)
+        clients.append(client_thread)
+    
+    for client_thread in clients:
+        client_thread.start()
+
+    for client_thread in clients:
+        client_thread.join()
+
+start_clients(100)

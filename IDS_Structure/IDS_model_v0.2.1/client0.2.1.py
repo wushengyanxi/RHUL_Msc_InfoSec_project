@@ -50,7 +50,7 @@ Sample_dict = {
     "XMRIGCC": XMRIGCC_CryptoMiner_TestingSet
 }
 
-Amount_and_types = [[50,"Benign"]]
+Amount_and_types = [[50, "Benign"]]
 Client_Script_Threads = []
 
 

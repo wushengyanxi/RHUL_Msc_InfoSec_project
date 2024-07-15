@@ -111,7 +111,10 @@ def parameter_update_process(share_data, lock):
             print("模型的最终正确率是", correct_rate)
             sys.exit()
 
+        
         if len(share_data['sample_buffer']) >= share_data['buffer_limit'].value:
+            print("len(share_data['sample_buffer'])的值是",len(share_data['sample_buffer']))
+            print("share_data['buffer_limit'].value的值是",share_data['buffer_limit'].value)
             share_data['sample_to_be_written'].extend(share_data['sample_buffer'])
             share_data['sample_buffer'][:] = []
 
@@ -164,7 +167,7 @@ if __name__ == '__main__':
     shared_data['Testing_Data_Set'][:] = Testing_Data_Set
     shared_data['scale_weight'][:] = Scale_Weight
     shared_data['decision_record'][:] = Decision_Record
-
+    '''
     Testing_Data_Sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
     Testing_Data_Sender.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     Testing_Data_Sender.bind(("127.0.0.1", 8081))
@@ -189,6 +192,7 @@ if __name__ == '__main__':
     print("Testing data set transmission done")
     Client_Main_Socket.close()
     Testing_Data_Sender.close()
+    '''
 
     num_processes = 10  # 可以调整的参数
 
@@ -214,3 +218,8 @@ if __name__ == '__main__':
 
 
     # 把start_decision_processes删掉，直接for循环启动decision_process，避免manager对象被嵌套传输
+
+
+
+
+
