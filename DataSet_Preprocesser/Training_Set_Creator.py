@@ -103,7 +103,8 @@ def Training_set_create(Background=2000, Benign=10000, Bruteforce_XML=2000, Brut
 
     return features_name, training_Data_Set, testing_Data_Set
 
+if __name__ == "__main__":
 
-Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create()
-print("the features list is: ", Features_name)
-print("one of the sample in training set is: ", Training_Data_Set[0])
+    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create()
+    print("the features list is: ", Features_name)
+    print("one of the sample in training set is: ", Training_Data_Set[0])

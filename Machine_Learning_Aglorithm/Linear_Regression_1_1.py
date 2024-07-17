@@ -65,11 +65,12 @@ def LR_preprocess_data(Data, features_list):
     # Standardize features
     scaler = StandardScaler()
     X = numeric_data[:, :-1]
-    y = numeric_data[:, -1].reshape(-1, 1)
-    X = scaler.fit_transform(X)
+    y = numeric_data[:, -1].reshape(-1, 1) # Training sample labels
+    X = scaler.fit_transform(X) # The scaled training samples
 
     # Get scale factors for each feature
-    scale_factors = [[features_list[i], 1 / scaler.scale_[i]] for i in numeric_features]
+    scale_factors = [[features_list[i], 1 / scaler.scale_[i]] for i in numeric_features] 
+    # The scaling ratio of each feature of the training sample
 
     return X, y, numeric_features, scale_factors
 
@@ -151,7 +152,9 @@ def one_step_LR(Data, feature_list, epochs=10000, learning_rate=0.001):
     X, y, numeric_features, scale_factors = LR_preprocess_data(Data, feature_list)
     weight_result = train_linear_regression(X, y, numeric_features, feature_list, epochs, learning_rate)
 
-    return scale_factors, weight_result
+    return scale_factors, weight_result 
+    # scale_factors: 2D-array
+    # weight_result: dictionary
 
 
 '''

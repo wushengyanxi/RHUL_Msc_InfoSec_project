@@ -160,4 +160,4 @@ def train_svm(feature_list, Data, epochs=10000, learning_rate=0.001, C=1.0):
     for i, feature in enumerate(numeric_features):
         result[feature_list[feature]] = weights[i]
 
-    return [f"{k}: {v}" for k, v in result.items()]
+    return result
