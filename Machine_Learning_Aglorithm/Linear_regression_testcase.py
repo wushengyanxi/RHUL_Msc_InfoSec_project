@@ -10,7 +10,6 @@ from Linear_Regression_1_1 import one_step_LR
 
 Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create()
 
-
 s, w = one_step_LR(Training_Data_Set, Features_name,300)
 print(s)
 print(w)

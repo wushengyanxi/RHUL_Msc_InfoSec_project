@@ -102,6 +102,7 @@ def Training_set_create(Background=2000, Benign=10000, Bruteforce_XML=2000, Brut
                         Probing_TestingSet, XMRIGCC_CryptoMiner_TestingSet]
 
     return features_name, training_Data_Set, testing_Data_Set
+    # return sample with label, 88 length for each sample
 
 if __name__ == "__main__":
 
