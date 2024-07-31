@@ -1,142 +1,132 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
-def Softmax_preprocess_data(Data, features_list):
-    Data = np.array(Data, dtype=object)
-
-    # Determine numeric features and filter data
-    numeric_features = []
-    numeric_data = []
-
-    for feature in range(Data.shape[1] - 1):  # Exclude the last column (labels)
-        if all(isinstance(x, (int, float)) for x in Data[:, feature]):
-            numeric_features.append(feature)
-            numeric_data.append(Data[:, feature].astype(float))
-        else:
-            numeric_data.append(np.zeros(Data.shape[0]))  # Set non-numeric features to 0
-
-    # Include labels in numeric data
-    labels = Data[:, -1].astype(float)
-    numeric_data.append(labels)
-
-    # Convert to numpy array
-    numeric_data = np.array(numeric_data).T
-
-    # Replace NaN and Inf values with column mean
-    for i in range(numeric_data.shape[1]):
-        col = numeric_data[:, i]
-        valid_mask = np.isfinite(col)
-        if np.sum(valid_mask) == 0:
-            raise ValueError(f"All values are invalid in column {i}")
-        mean_value = col[valid_mask].mean()
-        col[~valid_mask] = mean_value
-
-    # Standardize features
-    scaler = StandardScaler()
-    X = numeric_data[:, :-1]
-    y = numeric_data[:, -1].reshape(-1, 1)  # Training sample labels
-    X = scaler.fit_transform(X)  # The scaled training samples
-
-    # Get scale factors for each feature
-    scale_factors = [[features_list[i], 1 / scaler.scale_[i]] for i in numeric_features]
-    return X, y, numeric_features, scale_factors
-
-def softmax(z):
-    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))  
-    # Ensure that softmax calculations are stable and avoid overflow
-    # Calculate the exponential of the above results element by element, that is, calculate each element of e
-    return exp_z / np.sum(exp_z, axis=1, keepdims=True)
-    # Sum each row of the above exponential matrix while keeping the dimension unchanged
-    # Divide each element of exp_z by the sum of the row in which the element is located to obtain the softmax probability
+def Softmax_preprocess_training(training_set, features_list):
     
-def cross_entropy_loss(y_true, y_pred):
-    """
-    Computes the cross-entropy loss between the true labels and the predicted probabilities.
-
-    Cross-entropy loss, also known as log loss, measures the performance of a classification model
-    whose output is a probability value between 0 and 1. The loss increases as the predicted probability
-    diverges from the actual label.
-
-    Args:
-        y_true (numpy.ndarray): One-hot encoded true labels of shape (num_samples, num_classes).
-        y_pred (numpy.ndarray): Predicted probabilities of shape (num_samples, num_classes).
-
-    Returns:
-        float: The cross-entropy loss value.
-
-    Note:
-        A small value (1e-8) is added to `y_pred` to avoid taking the logarithm of zero,
-        which would result in an undefined value.
-    """
-    return -np.mean(np.sum(y_true * np.log(y_pred + 1e-8), axis=1))
-
-def train_softmax_classifier(X, y, learning_rate=0.01, epochs=1000):
-    """
-    Train a softmax classifier from scratch.
-
-    Args:
-        X (numpy.ndarray): Standardized features of the dataset.
-        y (numpy.ndarray): Labels of the dataset.
-        learning_rate (float): Learning rate for gradient descent.
-        epochs (int): Number of iterations for training.
-
-    Returns:
-        weight (numpy.ndarray): Trained weights of the softmax classifier.
-        bias (numpy.ndarray): Trained bias of the softmax classifier.
-    """
-    num_samples, num_features = X.shape
-    num_classes = len(np.unique(y))
-    weights = np.random.randn(num_features, num_classes)
-    bias = np.zeros((1, num_classes))
-
-    # One-hot encode labels
-    y_one_hot = np.eye(num_classes)[y.astype(int).flatten()]
-
-    # Gradient descent
-    for epoch in range(epochs):
-        logits = np.dot(X, weights) + bias # wx+b = log-odd
-        probs = softmax(logits)
-        loss = cross_entropy_loss(y_one_hot, probs)
-
-        gradient_w = np.dot(X.T, (probs - y_one_hot)) / num_samples
-        gradient_b = np.mean(probs - y_one_hot, axis=0, keepdims=True)
-
-        weights -= learning_rate * gradient_w
-        bias -= learning_rate * gradient_b
-
-        if epoch % 100 == 0:
-            print(f'Epoch {epoch}, Loss: {loss}')
-
-    return weights, bias
-
-def classify_softmax(test_sample, weights, bias, features_list, numeric_features, scale_factors):
-    """
-    Classify samples using the trained softmax classifier.
-
-    Args:
-        test_sample (numpy.ndarray): Standardized features of the test dataset.
-        weights (numpy.ndarray): Trained weights of the softmax classifier.
-        bias (numpy.ndarray): Trained bias of the softmax classifier.
-        features_list (list): List of feature names.
-        numeric_features (list): List of indices of numeric features.
-        scale_factors (list): List of scaling factors for numeric features.
-        
-
-    Returns:
-        numpy.ndarray: Predicted class labels for the test dataset.
-    """
-    # Step 2: Set non-numeric features to 0
-    for i, feature in enumerate(features_list[:-1]):  # Exclude the last column (label)
-        if feature not in numeric_features:
-            test_sample[i] = 0
-
-    # Step 3: Scale numeric features
-    for feature, scale in scale_factors:
+    heaviest_features = ['bwd_pkts_payload.min', 'responp', 'flow_pkts_payload.avg', 'bwd_iat.tot', 'flow_pkts_per_sec', 'payload_bytes_per_second', 'idle.avg', 
+     'fwd_pkts_payload.max', 'fwd_pkts_tot', 'flow_iat.tot', 'fwd_iat.tot', 'fwd_pkts_payload.avg', 'fwd_iat.min', 'idle.tot', 'fwd_header_size_tot', 'bwd_data_pkts_tot', 
+     'flow_RST_flag_count', 'bwd_header_size_max', 'bwd_iat.std', 'fwd_pkts_payload.min', 'flow_pkts_payload.max', 'flow_FIN_flag_count', 'Label']
+    
+    indices = {}
+    for feature in heaviest_features:
         if feature in features_list:
             index = features_list.index(feature)
-            test_sample[index] *= scale
+            indices[feature] = index
+    
+    new_training_set = []
+    for samples in training_set:
+        new_sample = []
+        for feature in heaviest_features:
+            if feature in indices:
+                new_sample.append(samples[indices[feature]])
+        new_training_set.append(new_sample)
+    # with this heaviest_features, all the avlue in sample should be int or float
+    
+    for i in new_training_set:
+        for j in i:
+            if not isinstance(j, (int, float)):
+                j = 0
+    # change all nun-numeric value to 0
+    
+    X_train = [] # 2D array for X_train [[sample1],[sample2],..,[samplen]]
+    y_train = [] # 1D list for label [0,0,...,1,1]
+    
+    for i in new_training_set:
+        X_train.append(i[:-1])
+        y_train.append(i[-1])
 
-    logits = np.dot(test_sample, weights) + bias
-    probs = softmax(logits)
-    return np.argmax(probs, axis=1)
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    
+    means = scaler.mean_
+    means = means.tolist()
+    stds = scaler.scale_
+    stds = stds.tolist()
+    scale_factors = [means,stds]
+    
+    for sample in X_train:
+        for i in range(0,len(sample)):
+            sample[i] = (sample[i] - scale_factors[0][i]) / scale_factors[1][i]
+    
+    X_train = np.array(X_train)
+    y_train = np.array(y_train)
+    
+    return X_train, y_train, scale_factors, heaviest_features
+
+# Softmax函数
+def softmax(z):
+    if z.ndim == 1:
+        z = np.expand_dims(z, axis=0)
+    
+    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+    return exp_z / exp_z.sum(axis=1, keepdims=True)
+
+# 交叉熵损失函数
+def cross_entropy_loss(y_true, y_pred):
+    n_samples = y_true.shape[0]
+    logp = - np.log(y_pred[range(n_samples), y_true])
+    loss = np.sum(logp) / n_samples
+    return loss
+
+# 计算梯度
+def compute_gradient(X, y_true, y_pred):
+    n_samples = X.shape[0]
+    grad = X.T.dot(y_pred - y_true) / n_samples
+    return grad
+
+# 训练函数
+def train(X, y, learning_rate=0.01, epochs=1000):
+    n_samples, n_features = X.shape
+    n_classes = len(np.unique(y))
+    
+    y = y.astype(int).ravel()    
+    # 初始化权重
+    W = np.random.randn(n_features, n_classes)
+    
+    # 将标签转换为one-hot编码
+    y_one_hot = np.zeros((n_samples, n_classes))
+    y_one_hot[np.arange(n_samples), y] = 1
+    
+    for epoch in range(epochs):
+        # 计算预测值
+        z = X.dot(W)
+        y_pred = softmax(z)
+        
+        # 计算损失
+        loss = cross_entropy_loss(y, y_pred)
+        
+        # 计算梯度
+        dW = compute_gradient(X, y_one_hot, y_pred)
+        
+        # 更新权重
+        W -= learning_rate * dW
+        
+        # if epoch % 100 == 0:
+            # print(f'Epoch {epoch}, Loss: {loss}')
+    
+    return W
+
+def each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
+    indices = {}
+    for feature in heaviest_features:
+        if feature in features_list:
+            index = features_list.index(feature)
+            indices[feature] = index
+    
+    testing_sample = []
+    for feature in heaviest_features:
+        if feature in indices:
+            testing_sample.append(test_sample[indices[feature]])
+    
+    for i in range(0,len(scale_factors[0])):
+        testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]
+    
+    testing_sample = np.array(testing_sample)
+    
+    return testing_sample
+
+def softmax_predict(X, W):
+    z = X.dot(W)
+    y_pred = softmax(z)
+    return np.argmax(y_pred, axis=1)
 

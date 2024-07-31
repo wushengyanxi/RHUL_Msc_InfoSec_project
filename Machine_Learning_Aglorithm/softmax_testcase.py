@@ -1,41 +1,66 @@
 import sys
 import random
 import time
+import numpy as np
 
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
 from Training_Set_Creator import Training_set_create
-from softmax import softmax, cross_entropy_loss, train_softmax_classifier
-from softmax import Softmax_preprocess_data
-from softmax import train_softmax_classifier
-from softmax import classify_softmax
+from softmax import softmax, cross_entropy_loss, compute_gradient
+from softmax import Softmax_preprocess_training
+from softmax import train
+from softmax import softmax_predict
+from softmax import each_test_sample_preprocess
+#from softmax import softmax_predict
 
-Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create()
 
-X_train, y_train, numeric_features, scale_factors = Softmax_preprocess_data(Training_Data_Set, Features_name)
 
-weight, bias = train_softmax_classifier(X_train, y_train, learning_rate=0.01, epochs=1000)
+'''
+for i in range(0,10):
 
-print(weight)
-print(bias)
-print(len(weight))
+    test_sample = each_test_sample_preprocess(Training_Data_Set[i], scale_factors, Features_name, heaviest_features)
+
+    predict = softmax_predict(test_sample[:-1], weight)
+
+    print(predict)
+'''
 
 print("start predicting test sample") 
 
-all_test_sample = []
-for i in range(0,len(Testing_Data_Set)):
-    all_test_sample += Testing_Data_Set[i]
+for i in range(0,20):
+    
+    print("round: ", i)
+    
+    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
 
-random.seed(65)
-random.shuffle(all_test_sample)
+    X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 
-all_test_sample = all_test_sample[:30000]
-count = 0
+    weight = train(X_train, y_train, learning_rate=0.08, epochs=10000)
 
-for samples in all_test_sample:
-    test_sample = samples[:-1]
-    prediction = classify_softmax(test_sample, weight, bias, Features_name, numeric_features, scale_factors)
-    if prediction == samples[-1]:
-        count += 1
+    all_test_sample = []
+    for i in range(0,len(Testing_Data_Set)):
+        all_test_sample += Testing_Data_Set[i]
 
-correct_rate = count / len(all_test_sample)
-print("The correct rate is: ", correct_rate)
+    random.shuffle(all_test_sample)
+
+    all_test_sample_benign = Testing_Data_Set[0][:3000] + Testing_Data_Set[1][:3000]
+    all_test_sample_malicious = Testing_Data_Set[2][:1500] + Testing_Data_Set[3][:1500] + Testing_Data_Set[4][:1500] + Testing_Data_Set[5][:1500]
+    count = 0
+
+    for samples in all_test_sample_benign:
+        test_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        predict = softmax_predict(test_sample[:-1], weight)
+        if predict == samples[-1]:
+            count += 1
+
+    correct_rate = count / len(all_test_sample_benign)
+    print("The correct rate for benign sample is: ", correct_rate)
+
+    count = 0
+    for samples in all_test_sample_malicious:
+        test_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        predict = softmax_predict(test_sample[:-1], weight)
+        if predict == samples[-1]:
+            count += 1
+
+    correct_rate = count / len(all_test_sample_malicious)
+    print("The correct rate for malicious sample is: ", correct_rate)

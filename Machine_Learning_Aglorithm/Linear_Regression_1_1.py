@@ -6,73 +6,62 @@ from sklearn.preprocessing import StandardScaler
 import time
 
 
-def LR_preprocess_data(Data, features_list):
-    """
-    Preprocesses the input data for machine learning tasks by converting all
-    features to numeric format, handling missing values, and standardizing the features.
+def LR_preprocess_data(training_set, features_list):
+    #heaviest_features = ['bwd_pkts_payload.max', 'flow_ACK_flag_count', 'fwd_iat.max', 'active.tot', 'active.avg', 'bwd_header_size_max', 'flow_iat.tot', 'idle.max',
+    #                    'active.min', 'bwd_pkts_payload.tot', 'flow_SYN_flag_count', 'bwd_iat.std', 'flow_FIN_flag_count', 'originp', 'Unnamed: 0.1', 'fwd_PSH_flag_count',
+    #                   'bwd_header_size_min', 'flow_duration', 'bwd_pkts_payload.avg', 'fwd_pkts_payload.std', 'fwd_header_size_max', 'flow_pkts_payload.avg', 'fwd_bulk_rate',
+    #                  'fwd_header_size_tot', 'fwd_pkts_payload.avg', 'bwd_bulk_bytes', 'bwd_pkts_payload.min', 'fwd_iat.min', 'flow_pkts_payload.std', 'flow_iat.max', 'Label']
+    heaviest_features = ['flow_ACK_flag_count', 'fwd_iat.max', 'active.tot', 'bwd_header_size_max', 'flow_iat.tot','active.min','flow_SYN_flag_count', 'bwd_iat.std',
+                         'flow_FIN_flag_count', 'originp', 'Unnamed: 0.1', 'fwd_PSH_flag_count','bwd_header_size_min', 'flow_duration', 'fwd_pkts_payload.std', 'fwd_header_size_max',
+                         'flow_pkts_payload.avg', 'fwd_bulk_rate','fwd_header_size_tot', 'fwd_pkts_payload.avg', 'bwd_bulk_bytes', 'bwd_pkts_payload.min', 'fwd_iat.min', 'flow_pkts_payload.std',
+                         'flow_iat.max', 'Label']
 
-    The function first checks each feature to determine if it is numeric. Non-numeric
-    features are set to zero. Then, it handles any missing or infinite values in the
-    numeric data by replacing them with the mean of their respective columns. Finally,
-    it standardizes the numeric features using a StandardScaler.
+    indices = {}
+    for feature in heaviest_features:
+        if feature in features_list:
+            index = features_list.index(feature)
+            indices[feature] = index
+    
+    new_training_set = []
+    for samples in training_set:
+        new_sample = []
+        for feature in heaviest_features:
+            if feature in indices:
+                new_sample.append(samples[indices[feature]])
+        new_training_set.append(new_sample)
+    # with this heaviest_features, all the avlue in sample should be int or float
+    
+    for i in new_training_set:
+        for j in i:
+            if not isinstance(j, (int, float)):
+                j = 0
+    # change all nun-numeric value to 0
+    
+    X_train = [] # 2D array for X_train [[sample1],[sample2],..,[samplen]]
+    y_train = [] # 1D list for label [0,0,...,1,1]
+    
+    for i in new_training_set:
+        X_train.append(i[:-1])
+        y_train.append(i[-1])
 
-    Args:
-        Data (list or numpy.ndarray): The dataset to preprocess, where the last column
-            is assumed to be the labels.
-
-    Returns:
-        tuple:
-            - numpy.ndarray: The standardized features of the dataset.
-            - numpy.ndarray: The labels of the dataset.
-            - list: The indices of the columns that were considered numeric.
-
-    Raises:
-        ValueError: If all values in a column are NaN or infinite.
-
-
-    Note:
-        Non-numeric features are transformed to zero and do not contribute to the model input.
-    """
-    Data = np.array(Data, dtype=object)
-
-    # Determine numeric features and filter data
-    numeric_features = []
-    numeric_data = []
-
-    for feature in range(Data.shape[1] - 1):  # Exclude the last column (labels)
-        if all(isinstance(x, (int, float)) for x in Data[:, feature]):
-            numeric_features.append(feature)
-            numeric_data.append(Data[:, feature].astype(float))
-        else:
-            numeric_data.append(np.zeros(Data.shape[0]))  # Set non-numeric features to 0
-
-    # Include labels in numeric data
-    labels = Data[:, -1].astype(float)
-    numeric_data.append(labels)
-
-    # Convert to numpy array
-    numeric_data = np.array(numeric_data).T
-
-    # Replace NaN and Inf values with column mean
-    for i in range(numeric_data.shape[1]):
-        col = numeric_data[:, i]
-        valid_mask = np.isfinite(col)
-        if np.sum(valid_mask) == 0:
-            raise ValueError(f"All values are invalid in column {i}")
-        mean_value = col[valid_mask].mean()
-        col[~valid_mask] = mean_value
-
-    # Standardize features
     scaler = StandardScaler()
-    X = numeric_data[:, :-1]
-    y = numeric_data[:, -1].reshape(-1, 1) # Training sample labels
-    X = scaler.fit_transform(X) # The scaled training samples
+    scaler.fit(X_train)
+    
+    means = scaler.mean_
+    means = means.tolist()
+    stds = scaler.scale_
+    stds = stds.tolist()
+    scale_factors = [means,stds]
+    
+    for sample in X_train:
+        for i in range(0,len(sample)):
+            sample[i] = (sample[i] - scale_factors[0][i]) / scale_factors[1][i]
+    
+    X_train = np.array(X_train)
+    y_train = np.array(y_train)
+    
+    return X_train, y_train, scale_factors, heaviest_features
 
-    # Get scale factors for each feature
-    scale_factors = [[features_list[i], 1 / scaler.scale_[i]] for i in numeric_features] 
-    # The scaling ratio of each feature of the training sample
-
-    return X, y, numeric_features, scale_factors
 
 
 class LinearRegressionModel(nn.Module):
@@ -84,10 +73,11 @@ class LinearRegressionModel(nn.Module):
         return self.linear(x)
 
 
-def train_linear_regression(X, y, numeric_features, feature_list, epochs=10000, learning_rate=0.001):
+def train_linear_regression(X, y, epochs=10000, learning_rate=0.001):
     # Convert to tensor
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
+    y = y.unsqueeze(1)
 
     # Initialize model, loss function, and optimizer
     input_dim = X.shape[1]
@@ -110,42 +100,53 @@ def train_linear_regression(X, y, numeric_features, feature_list, epochs=10000, 
         optimizer.step()
 
         # Print loss for every 100 epochs
-        if (epoch + 1) % 2 == 0:
-            print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
+        if (epoch + 1) % 100 == 0:
+            #print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
+            pass
 
     end_time = time.time()
-    print("Training time: {:.2f} seconds".format(end_time - start_time))
+    #print("Training time: {:.2f} seconds".format(end_time - start_time))
 
     # Extract weights
     weights = model.linear.weight.data.numpy().flatten()
 
-    # Create result dictionary
-    result = {feature_list[i]: 0.0 for i in range(len(feature_list))}
-    for i, feature in enumerate(numeric_features):
-        result[feature_list[feature]] = weights[i]
-    '''
-    # Create result list
-    result = []
-    for i in range(len(weights)):
-        result.append([feature_list[i], float(weights[i])])
-    '''
-    return result
+    return weights
+    # a dictionary of weight, key for features name and value for numberic weight
+
+def each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
+    indices = {}
+    for feature in heaviest_features:
+        if feature in features_list:
+            index = features_list.index(feature)
+            indices[feature] = index
+    
+    testing_sample = []
+    for feature in heaviest_features:
+        if feature in indices:
+            testing_sample.append(test_sample[indices[feature]])
+    
+    for i in range(0,len(scale_factors[0])):
+        testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]
+    
+    testing_sample = np.array(testing_sample)
+    
+    return testing_sample
 
 
-def linear_regression_predict(features, weights, sample, scale_factors):
-    # sample = preprocess_data(sample) 这些数据需要被初始化
+
+
+def linear_regression_predict(test_sample, weights):
     predict_score = 0
-    predict_label = 0
-    for n in range(0, len(features)):
-        index = next((i for i, sublist in enumerate(scale_factors) if sublist[0] == features[n]), -1)
-        if index != -1:
-            sample[n] = sample[n] * scale_factors[index][1]
-            predict_score += sample[n] * weights[features[n]]
+    for i in range(0,len(weights)):
+        predict_score += weights[i] * test_sample[i]
 
-    if predict_score >= 0.5:
-        predict_label = 1
+    # 第四步：根据预测分数判断预判结果
+    predict_label = 1 if predict_score >= -0.1 else 0
 
+    # 第五步：返回预判结果
     return predict_label
+
+
 
 
 def one_step_LR(Data, feature_list, epochs=10000, learning_rate=0.001):

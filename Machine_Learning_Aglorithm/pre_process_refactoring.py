@@ -1,13 +1,12 @@
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim
 from sklearn.preprocessing import StandardScaler
+import sys
+import random
 import time
-from sklearn import svm
-
-
-
+import numpy as np
+sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
+from Training_Set_Creator import Training_set_create
+    
 def Softmax_preprocess_training(training_set, features_list):
     
     heaviest_features = ['bwd_pkts_payload.min', 'responp', 'flow_pkts_payload.avg', 'bwd_iat.tot', 'flow_pkts_per_sec', 'payload_bytes_per_second', 'idle.avg', 
@@ -55,35 +54,7 @@ def Softmax_preprocess_training(training_set, features_list):
         for i in range(0,len(sample)):
             sample[i] = (sample[i] - scale_factors[0][i]) / scale_factors[1][i]
     
-    X_train = np.array(X_train)
-    y_train = np.array(y_train)
-    
     return X_train, y_train, scale_factors, heaviest_features
-
-def svm_train(X, y, kernel='linear', C=1.0):
-    """
-    训练SVM模型
-    :param X: 特征数据，形状为 (n_samples, n_features)
-    :param y: 标签数据，形状为 (n_samples,)
-    :param kernel: 核函数类型，默认是 'linear'
-    :param C: 正则化参数，默认是 1.0
-    :return: 训练好的SVM模型
-    """
-    model = svm.SVC(kernel=kernel, C=C)
-    model.fit(X, y)
-    return model
-
-def svm_predict(model, X):
-    """
-    使用训练好的SVM模型进行预测
-    :param model: 训练好的SVM模型
-    :param X: 特征数据，形状为 (n_samples, n_features)
-    :return: 预测结果，形状为 (n_samples,)
-    """
-    if X.ndim == 1:
-        X = X.reshape(1, -1)
-        
-    return model.predict(X)
 
 def each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
     indices = {}
@@ -96,11 +67,28 @@ def each_test_sample_preprocess(test_sample, scale_factors, features_list, heavi
     for feature in heaviest_features:
         if feature in indices:
             testing_sample.append(test_sample[indices[feature]])
-     
+    
+    
+    
     for i in range(0,len(scale_factors[0])):
         testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]
     
-    testing_sample = np.array(testing_sample)
-    
     return testing_sample
+    
+    
 
+
+
+Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
+
+X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
+
+print(X_train[0])
+
+each_test_sample_preprocess(Training_Data_Set[0], scale_factors, Features_name, heaviest_features)
+    
+    
+
+
+
+    
