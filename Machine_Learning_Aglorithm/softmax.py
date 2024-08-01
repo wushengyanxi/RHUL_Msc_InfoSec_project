@@ -106,7 +106,7 @@ def train(X, y, learning_rate=0.01, epochs=1000):
     
     return W
 
-def each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
+def softmax_each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
     indices = {}
     for feature in heaviest_features:
         if feature in features_list:

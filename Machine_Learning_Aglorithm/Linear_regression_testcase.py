@@ -6,7 +6,7 @@ from Training_Set_Creator import Training_set_create
 from Linear_Regression_1_1 import train_linear_regression
 from Linear_Regression_1_1 import LR_preprocess_data
 from Linear_Regression_1_1 import linear_regression_predict
-from Linear_Regression_1_1 import each_test_sample_preprocess
+from Linear_Regression_1_1 import LR_each_test_sample_preprocess
 from Linear_Regression_1_1 import one_step_LR
 
 for i in range(0,20):
@@ -20,7 +20,7 @@ for i in range(0,20):
 
     count = 0
     for samples in all_test_sample_benign:
-        testing_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        testing_sample = LR_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         prediction = linear_regression_predict(testing_sample[:-1], weights)
         if prediction == 0: #samples[-1]:
             count += 1
@@ -30,7 +30,7 @@ for i in range(0,20):
 
     count = 0
     for samples in all_test_sample_malicious:
-        testing_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        testing_sample = LR_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         prediction = linear_regression_predict(testing_sample[:-1], weights)
         if prediction == 1: #samples[-1]:
             count += 1

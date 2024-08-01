@@ -111,9 +111,9 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.001):
     weights = model.linear.weight.data.numpy().flatten()
 
     return weights
-    # a dictionary of weight, key for features name and value for numberic weight
+# return a dictionary of weight, key for features name and value for numberic weight
 
-def each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
+def LR_each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
     indices = {}
     for feature in heaviest_features:
         if feature in features_list:
@@ -131,7 +131,7 @@ def each_test_sample_preprocess(test_sample, scale_factors, features_list, heavi
     testing_sample = np.array(testing_sample)
     
     return testing_sample
-
+# return a preprocessed sample for testing
 
 
 
@@ -150,10 +150,10 @@ def linear_regression_predict(test_sample, weights):
 
 
 def one_step_LR(Data, feature_list, epochs=10000, learning_rate=0.001):
-    X, y, numeric_features, scale_factors = LR_preprocess_data(Data, feature_list)
-    weight_result = train_linear_regression(X, y, numeric_features, feature_list, epochs, learning_rate)
+    X_train, y_train, scale_factors, heaviest_features = LR_preprocess_data(Data, feature_list)
+    weight_result = train_linear_regression(X_train, y_train, epochs, learning_rate)
 
-    return scale_factors, weight_result 
+    return scale_factors, weight_result, heaviest_features
     # scale_factors: 2D-array
     # weight_result: dictionary
 

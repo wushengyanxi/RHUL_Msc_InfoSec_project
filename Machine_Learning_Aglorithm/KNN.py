@@ -68,7 +68,7 @@ def KNN_train(X_train, y_train):
     return [kdtree, y_train]
 
 
-def each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
+def KNN_each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
     indices = {}
     for feature in heaviest_features:
         if feature in features_list:

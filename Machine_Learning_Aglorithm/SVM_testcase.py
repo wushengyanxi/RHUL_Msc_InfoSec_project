@@ -5,7 +5,7 @@ from Training_Set_Creator import Training_set_create
 from SVM import svm_train
 from SVM import Softmax_preprocess_training
 from SVM import svm_predict
-from SVM import each_test_sample_preprocess
+from SVM import svm_each_test_sample_preprocess
 
 
 for i in range(0,20):
@@ -29,7 +29,7 @@ for i in range(0,20):
     count = 0
 
     for samples in all_test_sample_benign:
-        test_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        test_sample = svm_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         predict = svm_predict(model, test_sample[:-1])
         if predict == samples[-1]:
             count += 1
@@ -39,7 +39,7 @@ for i in range(0,20):
 
     count = 0
     for samples in all_test_sample_malicious:
-        test_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        test_sample = svm_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         predict = svm_predict(model, test_sample[:-1])
         if predict == samples[-1]:
             count += 1

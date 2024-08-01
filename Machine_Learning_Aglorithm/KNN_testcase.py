@@ -7,7 +7,7 @@ from Training_Set_Creator import Training_set_create
 from KNN import KNN_preprocess_training
 from KNN import KNN_train
 from KNN import KNN_predict
-from KNN import each_test_sample_preprocess
+from KNN import KNN_each_test_sample_preprocess
 
 for x in range(0,20):
     
@@ -24,7 +24,7 @@ for x in range(0,20):
 
     count = 0
     for samples in all_test_sample_benign:
-        testing_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        testing_sample = KNN_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         prediction = KNN_predict(testing_sample[:-1], Kdtree, k=3)
         if prediction == 0: #samples[-1]:
             count += 1
@@ -34,7 +34,7 @@ for x in range(0,20):
 
     count = 0
     for samples in all_test_sample_malicious:
-        testing_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        testing_sample = KNN_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         prediction = KNN_predict(testing_sample[:-1], Kdtree, k=3)
         if prediction == 1: #samples[-1]:
             count += 1

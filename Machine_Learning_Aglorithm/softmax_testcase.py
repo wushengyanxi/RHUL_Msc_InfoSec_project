@@ -9,7 +9,7 @@ from softmax import softmax, cross_entropy_loss, compute_gradient
 from softmax import Softmax_preprocess_training
 from softmax import train
 from softmax import softmax_predict
-from softmax import each_test_sample_preprocess
+from softmax import softmax_each_test_sample_preprocess
 #from softmax import softmax_predict
 
 
@@ -47,7 +47,7 @@ for i in range(0,20):
     count = 0
 
     for samples in all_test_sample_benign:
-        test_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        test_sample = softmax_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         predict = softmax_predict(test_sample[:-1], weight)
         if predict == samples[-1]:
             count += 1
@@ -57,7 +57,7 @@ for i in range(0,20):
 
     count = 0
     for samples in all_test_sample_malicious:
-        test_sample = each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
+        test_sample = softmax_each_test_sample_preprocess(samples, scale_factors, Features_name, heaviest_features)
         predict = softmax_predict(test_sample[:-1], weight)
         if predict == samples[-1]:
             count += 1
