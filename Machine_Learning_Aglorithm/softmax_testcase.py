@@ -7,7 +7,7 @@ sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Prepro
 from Training_Set_Creator import Training_set_create
 from softmax import softmax, cross_entropy_loss, compute_gradient
 from softmax import Softmax_preprocess_training
-from softmax import train
+from softmax import softmax_train
 from softmax import softmax_predict
 from softmax import softmax_each_test_sample_preprocess
 #from softmax import softmax_predict
@@ -34,7 +34,7 @@ for i in range(0,20):
 
     X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 
-    weight = train(X_train, y_train, learning_rate=0.08, epochs=10000)
+    weight = softmax_train(X_train, y_train, learning_rate=0.08, epochs=10000)
 
     all_test_sample = []
     for i in range(0,len(Testing_Data_Set)):

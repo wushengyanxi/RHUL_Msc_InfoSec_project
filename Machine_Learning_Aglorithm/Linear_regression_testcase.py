@@ -7,7 +7,6 @@ from Linear_Regression_1_1 import train_linear_regression
 from Linear_Regression_1_1 import LR_preprocess_data
 from Linear_Regression_1_1 import linear_regression_predict
 from Linear_Regression_1_1 import LR_each_test_sample_preprocess
-from Linear_Regression_1_1 import one_step_LR
 
 for i in range(0,20):
     print("round: ", i)

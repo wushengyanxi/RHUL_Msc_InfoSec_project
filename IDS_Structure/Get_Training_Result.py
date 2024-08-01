@@ -30,3 +30,9 @@ def Ensemble_Learning_Decision(param, new_sample, features_list):
 
 
 
+'''
+The above functions are used for model training and prediction on the anomaly detection system server until version 0.3
+
+
+
+'''

@@ -3,7 +3,7 @@ import random
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
 from Training_Set_Creator import Training_set_create
 from SVM import svm_train
-from SVM import Softmax_preprocess_training
+from SVM import svm_preprocess_training
 from SVM import svm_predict
 from SVM import svm_each_test_sample_preprocess
 
@@ -13,7 +13,7 @@ for i in range(0,20):
     
     Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
 
-    X, y, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
+    X, y, scale_factors, heaviest_features = svm_preprocess_training(Training_Data_Set, Features_name)
 
     model = svm_train(X, y)
     
