@@ -11,7 +11,7 @@ from SVM import svm_each_test_sample_preprocess
 for i in range(0,20):
     print("round: ", i)
     
-    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
+    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(700,700,1500,1500,1500,1500)
 
     X, y, scale_factors, heaviest_features = svm_preprocess_training(Training_Data_Set, Features_name)
 

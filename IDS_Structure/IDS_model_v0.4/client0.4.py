@@ -36,7 +36,7 @@ def standard_User_Script(time_low, time_high):
 
     while True:
         if message_amount%20 == 0 and message_amount != 0:
-            print(f"Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
+            print(f"Benign Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
         
         sample_index = random.randint(0, len(Sample_dict["Benign"]))
         test_sample = Sample_dict["Benign"][sample_index]
@@ -84,7 +84,7 @@ def BruteForce_User_Script():
 
     while True:
         if message_amount%20 == 0 and message_amount != 0:
-            print(f"Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
+            print(f"Malicious Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
         sample_index = random.randint(0, len(Sample_dict["Bruteforce"]))
         test_sample = Sample_dict["Bruteforce"][sample_index]
 
@@ -130,7 +130,7 @@ def Scanner_User_Script():
 
     while True:
         if message_amount%20 == 0 and message_amount != 0:
-            print(f"Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
+            print(f"Malicious Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
         sample_index = random.randint(0, len(Sample_dict["Bruteforce_XML"]))
         test_sample = Sample_dict["Bruteforce"][sample_index]
 

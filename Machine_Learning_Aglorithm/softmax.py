@@ -1,12 +1,15 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+import numbers
 
 def Softmax_preprocess_training(training_set, features_list):
-    
+
     heaviest_features = ['bwd_pkts_payload.min', 'responp', 'flow_pkts_payload.avg', 'bwd_iat.tot', 'flow_pkts_per_sec', 'payload_bytes_per_second', 'idle.avg', 
      'fwd_pkts_payload.max', 'fwd_pkts_tot', 'flow_iat.tot', 'fwd_iat.tot', 'fwd_pkts_payload.avg', 'fwd_iat.min', 'idle.tot', 'fwd_header_size_tot', 'bwd_data_pkts_tot', 
      'flow_RST_flag_count', 'bwd_header_size_max', 'bwd_iat.std', 'fwd_pkts_payload.min', 'flow_pkts_payload.max', 'flow_FIN_flag_count', 'Label']
+
     
+
     indices = {}
     for feature in heaviest_features:
         if feature in features_list:
@@ -23,9 +26,9 @@ def Softmax_preprocess_training(training_set, features_list):
     # with this heaviest_features, all the avlue in sample should be int or float
     
     for i in new_training_set:
-        for j in i:
-            if not isinstance(j, (int, float)):
-                j = 0
+        for x in range(0,len(i)):
+            if not isinstance(i[x], numbers.Number): #(int, float)):
+                i[x] = 0
     # change all nun-numeric value to 0
     
     X_train = [] # 2D array for X_train [[sample1],[sample2],..,[samplen]]
@@ -34,7 +37,7 @@ def Softmax_preprocess_training(training_set, features_list):
     for i in new_training_set:
         X_train.append(i[:-1])
         y_train.append(i[-1])
-
+    
     scaler = StandardScaler()
     scaler.fit(X_train)
     
@@ -118,6 +121,10 @@ def softmax_each_test_sample_preprocess(test_sample, scale_factors, features_lis
     for feature in heaviest_features:
         if feature in indices:
             testing_sample.append(test_sample[indices[feature]])
+
+    for i in range(0,len(testing_sample)):
+        if not isinstance(testing_sample[i],numbers.Number):# (int, float)):
+            testing_sample[i] = 0
     
     for i in range(0,len(scale_factors[0])):
         testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]

@@ -30,7 +30,7 @@ for i in range(0,20):
     
     print("round: ", i)
     
-    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
+    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(900,900,1500,1500,1500,1500)
 
     X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 

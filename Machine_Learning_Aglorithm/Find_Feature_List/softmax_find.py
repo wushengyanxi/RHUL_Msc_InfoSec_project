@@ -1,20 +1,12 @@
-'''
-This is a codespace for testing new features
-Used for large-scale refactoring of existing code
-
-'''
-
 import sys
 import random
 from random import shuffle
 import numpy as np
-
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
 from Training_Set_Creator import Training_set_create
-from softmax import softmax, cross_entropy_loss, train_softmax_classifier
-from softmax import Softmax_preprocess_data
-from softmax import train_softmax_classifier
-from softmax import classify_softmax
+sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\Machine_Learning_Aglorithm')
+from softmax import Softmax_preprocess_training
+from softmax import softmax_train
 
 def average_dicts(dict_list):
     # 确保列表不为空
@@ -51,37 +43,6 @@ def top_bottom_keys(data_dict):
     
     return top_keys, bottom_keys
 
-'''
-# code which used to find out heavist features for linear regression
-
-for i in range(0,10):
-
-    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
-
-    X_train, y_train, numeric_features, scale_factors = LR_preprocess_data(Training_Data_Set, Features_name)
-    # get preprocessed result first
-
-    result = train_linear_regression(X_train, y_train, numeric_features, Features_name, 25000)
-    weight_list.append(result) 
-    print("round ", i, " done")
-
-average_weight = average_dicts(weight_list)
-
-top_features, bottom_features = top_bottom_keys(average_weight)
-print(top_features)
-print()
-print(bottom_features)
-
-heaviest_features = []
-for i in top_features:
-    heaviest_features.append(i[0])
-
-for i in bottom_features:
-    heaviest_features.append(i[0])
-
-print(heaviest_features)
-'''
-
 def find_heaviest(weights, features):
 
     top_indices = np.argsort(weights)[::-1][:25]
@@ -97,9 +58,9 @@ for x in range(0,10):
     print("round ", x, " start")
     Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
 
-    X_train, y_train, numeric_features, scale_factors = Softmax_preprocess_data(Training_Data_Set, Features_name)
+    X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 
-    weight, bias = train_softmax_classifier(X_train, y_train, learning_rate=0.01, epochs=20000)
+    weight = softmax_train(X_train, y_train, learning_rate=0.08, epochs=10000)
     
     if x == 0:
         for i in range(0,len(weight)):
@@ -123,27 +84,4 @@ print()
 print(heaviest_index)
 print()
 
-show_result = []
-
-for x in range(0,10):
-    print("round ", x, " start")
-    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
-
-    X_train, y_train, numeric_features, scale_factors = Softmax_preprocess_data(Training_Data_Set, Features_name)
-
-    weight, bias = train_softmax_classifier(X_train, y_train, learning_rate=0.01, epochs=20000)
-    
-    if x == 0:
-        for i in heaviest_index:
-            show_result.append([Features_name[i],weight[i]])
-    
-    else:
-        for i in range(0,len(show_result)):
-            show_result[i][1][0] += weight[heaviest_index[i]][0]
-            show_result[i][1][1] += weight[heaviest_index[i]][1]
-            
-
-print(show_result)
-print()
-print("Observe the average performance of these features for 10 rounds")
 

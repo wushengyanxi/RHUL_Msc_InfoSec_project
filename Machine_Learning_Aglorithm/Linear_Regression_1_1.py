@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from sklearn.preprocessing import StandardScaler
 import time
+import numbers
 
 
 def LR_preprocess_data(training_set, features_list):
@@ -15,7 +16,7 @@ def LR_preprocess_data(training_set, features_list):
                          'flow_FIN_flag_count', 'originp', 'Unnamed: 0.1', 'fwd_PSH_flag_count','bwd_header_size_min', 'flow_duration', 'fwd_pkts_payload.std', 'fwd_header_size_max',
                          'flow_pkts_payload.avg', 'fwd_bulk_rate','fwd_header_size_tot', 'fwd_pkts_payload.avg', 'bwd_bulk_bytes', 'bwd_pkts_payload.min', 'fwd_iat.min', 'flow_pkts_payload.std',
                          'flow_iat.max', 'Label']
-
+    
     indices = {}
     for feature in heaviest_features:
         if feature in features_list:
@@ -32,9 +33,9 @@ def LR_preprocess_data(training_set, features_list):
     # with this heaviest_features, all the avlue in sample should be int or float
     
     for i in new_training_set:
-        for j in i:
-            if not isinstance(j, (int, float)):
-                j = 0
+        for x in range(0,len(i)):
+            if not isinstance(i[x], numbers.Number): #(int, float)):
+                i[x] = 0
     # change all nun-numeric value to 0
     
     X_train = [] # 2D array for X_train [[sample1],[sample2],..,[samplen]]
@@ -130,6 +131,10 @@ def LR_each_test_sample_preprocess(test_sample, scale_factors, features_list, he
         if feature in indices:
             testing_sample.append(test_sample[indices[feature]])
     #print("length of testing sample:",len(testing_sample))
+    
+    for i in range(0,len(testing_sample)):
+        if not isinstance(testing_sample[i],numbers.Number):# (int, float)):
+            testing_sample[i] = 0
     
     for i in range(0,len(scale_factors[0])):
         testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]

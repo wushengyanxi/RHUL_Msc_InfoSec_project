@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import numbers
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.preprocessing import StandardScaler
@@ -30,9 +31,9 @@ def svm_preprocess_training(training_set, features_list):
     # with this heaviest_features, all the avlue in sample should be int or float
     
     for i in new_training_set:
-        for j in i:
-            if not isinstance(j, (int, float)):
-                j = 0
+        for x in range(0,len(i)):
+            if not isinstance(i[x], numbers.Number):#(int, float)):
+                i[x] = 0
     # change all nun-numeric value to 0
     
     X_train = [] # 2D array for X_train [[sample1],[sample2],..,[samplen]]
@@ -97,6 +98,10 @@ def svm_each_test_sample_preprocess(test_sample, scale_factors, features_list, h
     for feature in heaviest_features:
         if feature in indices:
             testing_sample.append(test_sample[indices[feature]])
+            
+    for i in range(0,len(testing_sample)):
+        if not isinstance(testing_sample[i],numbers.Number):# (int, float)):
+            testing_sample[i] = 0
      
     for i in range(0,len(scale_factors[0])):
         testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]
