@@ -64,6 +64,7 @@ def KNN_train(X_train, y_train):
     Returns:
         list: The trained KDTree model and the training data labels.
     """
+    print("KNN training started")
     kdtree = KDTree(X_train)
     return [kdtree, y_train]
 

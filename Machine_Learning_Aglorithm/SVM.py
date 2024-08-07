@@ -69,6 +69,7 @@ def svm_train(X, y, kernel='linear', C=1.0):
     :param C: 正则化参数，默认是 1.0
     :return: 训练好的SVM模型
     """
+    print("SVM training start")
     model = svm.SVC(kernel=kernel, C=C)
     model.fit(X, y)
     return model

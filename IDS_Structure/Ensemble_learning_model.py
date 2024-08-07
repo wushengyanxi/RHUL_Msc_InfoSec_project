@@ -1,22 +1,23 @@
 import sys
 import random
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\Machine_Learning_Aglorithm')
-from ..Machine_Learning_Aglorithm.KNN import KNN_preprocess_training
-from ..Machine_Learning_Aglorithm.KNN import KNN_train
-from ..Machine_Learning_Aglorithm.KNN import KNN_predict
-from ..Machine_Learning_Aglorithm.KNN import KNN_each_test_sample_preprocess
-from ..Machine_Learning_Aglorithm.softmax import Softmax_preprocess_training
-from ..Machine_Learning_Aglorithm.softmax import softmax_train
-from ..Machine_Learning_Aglorithm.softmax import softmax_predict
-from ..Machine_Learning_Aglorithm.softmax import softmax_each_test_sample_preprocess
-from ..Machine_Learning_Aglorithm.Linear_Regression_1_1 import train_linear_regression
-from ..Machine_Learning_Aglorithm.Linear_Regression_1_1 import LR_preprocess_data
-from ..Machine_Learning_Aglorithm.Linear_Regression_1_1 import linear_regression_predict
-from ..Machine_Learning_Aglorithm.Linear_Regression_1_1 import LR_each_test_sample_preprocess
-from ..Machine_Learning_Aglorithm.SVM import svm_train
-from ..Machine_Learning_Aglorithm.SVM import svm_preprocess_training
-from ..Machine_Learning_Aglorithm.SVM import svm_predict
-from ..Machine_Learning_Aglorithm.SVM import svm_each_test_sample_preprocess
+from KNN import KNN_preprocess_training
+from KNN import KNN_train
+from KNN import KNN_predict
+from KNN import KNN_each_test_sample_preprocess
+from softmax import Softmax_preprocess_training
+from softmax import softmax_train
+from softmax import softmax_predict
+from softmax import softmax_each_test_sample_preprocess
+from Linear_Regression_1_1 import train_linear_regression
+from Linear_Regression_1_1 import LR_preprocess_data
+from Linear_Regression_1_1 import linear_regression_predict
+from Linear_Regression_1_1 import LR_each_test_sample_preprocess
+from SVM import svm_train
+from SVM import svm_preprocess_training
+from SVM import svm_predict
+from SVM import svm_each_test_sample_preprocess
+
 
 
 def Ensemble_Learning_Training(feature_list, Data):
@@ -42,31 +43,31 @@ def Ensemble_Learning_Training(feature_list, Data):
     return Ensemble_parameters
 
 def Ensemble_Learning_Decision(param, new_sample, features_list):
-    
-    LR_sample = LR_each_test_sample_preprocess(new_sample[:-1], param[0][1], features_list, param[0][2])
-    svm_sample = svm_each_test_sample_preprocess(new_sample[:-1], param[1][1], features_list, param[1][2])
-    knn_sample = KNN_each_test_sample_preprocess(new_sample[:-1], param[2][1], features_list, param[2][2])
-    softmax_sample = softmax_each_test_sample_preprocess(new_sample[:-1], param[3][1], features_list, param[3][2])
+    print("length of new sample which given to ensemble model:",len(new_sample))
+    LR_sample = LR_each_test_sample_preprocess(new_sample, param[0][1], features_list, param[0][2])
+    svm_sample = svm_each_test_sample_preprocess(new_sample, param[1][1], features_list, param[1][2])
+    knn_sample = KNN_each_test_sample_preprocess(new_sample, param[2][1], features_list, param[2][2])
+    softmax_sample = softmax_each_test_sample_preprocess(new_sample, param[3][1], features_list, param[3][2])
     
     benign_count = 0
     malicious_count = 0
     
-    if linear_regression_predict(LR_sample, param[0][0]) == 0:
+    if linear_regression_predict(LR_sample[:-1], param[0][0]) == 0:
         benign_count += 1
     else:
         malicious_count += 1
     
-    if svm_predict(param[1][0], svm_sample) == 0:
+    if svm_predict(param[1][0], svm_sample[:-1]) == 0:
         benign_count += 1
     else:
         malicious_count += 1
     
-    if KNN_predict(knn_sample, param[2][0]) == 0:
+    if KNN_predict(knn_sample[:-1], param[2][0]) == 0:
         benign_count += 1
     else:
         malicious_count += 1
     
-    if softmax_predict(softmax_sample, param[3][0]) == 0:
+    if softmax_predict(softmax_sample[:-1], param[3][0]) == 0:
         benign_count += 1
     else:
         malicious_count += 1
@@ -82,3 +83,5 @@ def Ensemble_Learning_Decision(param, new_sample, features_list):
         predict_decision = random.randint(0,1)
         
         # 其实需要研究一下，如果是平局的话，应该怎么办
+    
+    return predict_decision

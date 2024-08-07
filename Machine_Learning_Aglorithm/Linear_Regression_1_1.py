@@ -74,6 +74,7 @@ class LinearRegressionModel(nn.Module):
 
 
 def train_linear_regression(X, y, epochs=10000, learning_rate=0.001):
+    print("linear regression training start")
     # Convert to tensor
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
@@ -101,8 +102,8 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.001):
 
         # Print loss for every 100 epochs
         if (epoch + 1) % 100 == 0:
-            #print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
-            pass
+            print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
+            
 
     end_time = time.time()
     #print("Training time: {:.2f} seconds".format(end_time - start_time))
@@ -115,15 +116,20 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.001):
 
 def LR_each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
     indices = {}
+    count = 0
     for feature in heaviest_features:
         if feature in features_list:
+            count += 1
             index = features_list.index(feature)
             indices[feature] = index
-    
+    #print("count:",count)
+    #print("feature list?:",features_list)
+    #print(indices)
     testing_sample = []
     for feature in heaviest_features:
         if feature in indices:
             testing_sample.append(test_sample[indices[feature]])
+    #print("length of testing sample:",len(testing_sample))
     
     for i in range(0,len(scale_factors[0])):
         testing_sample[i] = (testing_sample[i] - scale_factors[0][i]) / scale_factors[1][i]
