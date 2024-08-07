@@ -18,27 +18,132 @@ from SVM import svm_preprocess_training
 from SVM import svm_predict
 from SVM import svm_each_test_sample_preprocess
 
+def split_list_into_five_parts_manual(lst):
+    avg = len(lst) // 5
+    remainder = len(lst) % 5
+    out = []
+    last = 0
 
+    for i in range(5):
+        part_size = avg + (1 if remainder > 0 else 0)
+        out.append(lst[last:last + part_size])
+        last += part_size
+        remainder -= 1
+
+    return out
+
+def create_K_fold_training_set(Data):
+    k_fold = []
+    random.shuffle(Data)
+    result = split_list_into_five_parts_manual(Data)
+    train1 = result[1] + result[2] + result[3] + result[4]
+    test1 = result[0]
+    k_fold.append([train1, test1])
+    train2 = result[0] + result[2] + result[3] + result[4]
+    test2 = result[1]
+    k_fold.append([train2, test2])
+    train3 = result[0] + result[1] + result[3] + result[4]
+    test3 = result[2]
+    k_fold.append([train3, test3])
+    train4 = result[0] + result[1] + result[2] + result[4]
+    test4 = result[3]
+    k_fold.append([train4, test4])
+    train5 = result[0] + result[1] + result[2] + result[3]
+    test5 = result[4]
+    k_fold.append([train5, test5])
+    
+    return k_fold
+        
 
 def Ensemble_Learning_Training(feature_list, Data):
     
     Ensemble_parameters = []
     
-    X_train, y_train, LR_scale_factors, LR_heaviest_features = LR_preprocess_data(Data, feature_list)
-    LR_weights = train_linear_regression(X_train, y_train, 10000, 0.001)
+    k_fold = create_K_fold_training_set(Data)
+    
+    LR_correct_rate = 0
+    LR_weights = None
+    LR_scale_factors = None
+    for i in range(0,5):
+        training_set = k_fold[i][0]
+        testing_set = k_fold[i][1]
+        X_train, y_train, current_LR_scale_factors, LR_heaviest_features = LR_preprocess_data(training_set, feature_list)
+        current_LR_weights = train_linear_regression(X_train, y_train, 10000, 0.001)
+        count = 0
+        for sample in testing_set:
+            LR_sample = LR_each_test_sample_preprocess(sample, current_LR_scale_factors, feature_list, LR_heaviest_features)
+            if linear_regression_predict(LR_sample[:-1], current_LR_weights) == sample[-1]:
+                count += 1
+        current_correct_rate = count / len(testing_set)
+        if current_correct_rate > LR_correct_rate:
+            LR_correct_rate = current_correct_rate
+            LR_weights = current_LR_weights
+            LR_scale_factors = current_LR_scale_factors       
     Ensemble_parameters.append([LR_weights, LR_scale_factors, LR_heaviest_features])
     
-    X_train, y_train, svm_scale_factors, svm_heaviest_features = svm_preprocess_training(Data, feature_list)
-    svm_model = svm_train(X_train, y_train)
+    
+    svm_correct_rate = 0
+    svm_model = None
+    svm_scale_factors = None
+    for i in range(0,5):
+        training_set = k_fold[i][0]
+        testing_set = k_fold[i][1]
+        X_train, y_train, current_svm_scale_factors, svm_heaviest_features = svm_preprocess_training(training_set, feature_list)
+        current_svm_model = svm_train(X_train, y_train)
+        count = 0
+        for sample in testing_set:
+            svm_sample = svm_each_test_sample_preprocess(sample, current_svm_scale_factors, feature_list, svm_heaviest_features)
+            if svm_predict(current_svm_model, svm_sample[:-1]) == sample[-1]:
+                count += 1
+        current_correct_rate = count / len(testing_set)
+        if current_correct_rate > svm_correct_rate:
+            svm_correct_rate = current_correct_rate
+            svm_model = current_svm_model
+            svm_scale_factors = current_svm_scale_factors
     Ensemble_parameters.append([svm_model, svm_scale_factors, svm_heaviest_features])
     
-    X_train, y_train, knn_scale_factors, knn_heaviest_features = KNN_preprocess_training(Data, feature_list)
-    Kdtree = KNN_train(X_train, y_train)
+    
+    knn_correct_rate = 0
+    Kdtree = None
+    knn_scale_factors = None
+    for i in range(0,5):
+        training_set = k_fold[i][0]
+        testing_set = k_fold[i][1]
+        X_train, y_train, current_knn_scale_factors, knn_heaviest_features = KNN_preprocess_training(training_set, feature_list)
+        current_Kdtree = KNN_train(X_train, y_train)
+        count = 0
+        for sample in testing_set:
+            knn_sample = KNN_each_test_sample_preprocess(sample, current_knn_scale_factors, feature_list, knn_heaviest_features)
+            if KNN_predict(knn_sample[:-1], current_Kdtree) == sample[-1]:
+                count += 1
+        current_correct_rate = count / len(testing_set)
+        if current_correct_rate > knn_correct_rate:
+            knn_correct_rate = current_correct_rate
+            Kdtree = current_Kdtree
+            knn_scale_factors = current_knn_scale_factors
     Ensemble_parameters.append([Kdtree, knn_scale_factors, knn_heaviest_features])
     
-    X_train, y_train, softmax_scale_factors, softmax_heaviest_features = Softmax_preprocess_training(Data, feature_list)
-    softmax_weights = softmax_train(X_train, y_train, learning_rate=0.08, epochs=10000)
+    
+    softmax_correct_rate = 0
+    softmax_weights = None
+    softmax_scale_factors = None
+    for i in range(0,5):
+        training_set = k_fold[i][0]
+        testing_set = k_fold[i][1]
+        X_train, y_train, current_softmax_scale_factors, softmax_heaviest_features = Softmax_preprocess_training(training_set, feature_list)
+        current_softmax_weights = softmax_train(X_train, y_train, learning_rate=0.08, epochs=10000)
+        count = 0
+        for sample in testing_set:
+            softmax_sample = softmax_each_test_sample_preprocess(sample, current_softmax_scale_factors, feature_list, softmax_heaviest_features)
+            if softmax_predict(softmax_sample[:-1], current_softmax_weights) == sample[-1]:
+                count += 1
+        current_correct_rate = count / len(testing_set)
+        if current_correct_rate > softmax_correct_rate:
+            softmax_correct_rate = current_correct_rate
+            softmax_weights = current_softmax_weights
+            softmax_scale_factors = current_softmax_scale_factors
     Ensemble_parameters.append([softmax_weights, softmax_scale_factors, softmax_heaviest_features])
+    print("model training finished with LR_correct_rate:",LR_correct_rate,"svm_correct_rate:",svm_correct_rate,"knn_correct_rate:",knn_correct_rate,"softmax_correct_rate:",softmax_correct_rate)
     
     return Ensemble_parameters
 
