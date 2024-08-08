@@ -12,7 +12,7 @@ for i in range(0,20):
     print("round: ", i)
     Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(400,400,1500,1500,1500,1500)
     X_train, y_train, scale_factors, heaviest_features = LR_preprocess_data(Training_Data_Set, Features_name)
-    weights = train_linear_regression(X_train, y_train, 10000, 0.001)
+    weights = train_linear_regression(X_train, y_train, 10000, 0.0001)
 
     all_test_sample_benign = Testing_Data_Set[0][:3000] + Testing_Data_Set[1][:3000]
     all_test_sample_malicious = Testing_Data_Set[2][:1500] + Testing_Data_Set[3][:1500] + Testing_Data_Set[4][:1500] + Testing_Data_Set[5][:1500]

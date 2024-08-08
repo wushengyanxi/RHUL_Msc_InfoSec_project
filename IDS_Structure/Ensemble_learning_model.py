@@ -157,22 +157,26 @@ def Ensemble_Learning_Decision(param, new_sample, features_list):
     benign_count = 0
     malicious_count = 0
     
-    if linear_regression_predict(LR_sample[:-1], param[0][0]) == 0:
+    LR_predict = linear_regression_predict(LR_sample[:-1], param[0][0])
+    if LR_predict == 0:
         benign_count += 1
     else:
         malicious_count += 1
     
-    if svm_predict(param[1][0], svm_sample[:-1]) == 0:
+    svm_predict = svm_predict(param[1][0], svm_sample[:-1])
+    if svm_predict == 0:
         benign_count += 1
     else:
         malicious_count += 1
     
-    if KNN_predict(knn_sample[:-1], param[2][0]) == 0:
+    KNN_predict = KNN_predict(knn_sample[:-1], param[2][0])
+    if KNN_predict == 0:
         benign_count += 1
     else:
         malicious_count += 1
     
-    if softmax_predict(softmax_sample[:-1], param[3][0]) == 0:
+    softmax_predict = softmax_predict(softmax_sample[:-1], param[3][0])
+    if softmax_predict == 0:
         benign_count += 1
     else:
         malicious_count += 1
@@ -189,4 +193,9 @@ def Ensemble_Learning_Decision(param, new_sample, features_list):
         
         # 其实需要研究一下，如果是平局的话，应该怎么办
     
-    return predict_decision
+    reliable = 0
+    
+    if LR_predict == svm_predict == KNN_predict == softmax_predict:
+        reliable = 1
+    
+    return predict_decision, reliable

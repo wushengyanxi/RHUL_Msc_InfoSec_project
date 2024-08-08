@@ -54,13 +54,13 @@ def find_heaviest(weights, features):
 
 average_weights = []
 
-for x in range(0,10):
+for x in range(0,8):
     print("round ", x, " start")
     Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
 
     X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 
-    weight = softmax_train(X_train, y_train, learning_rate=0.08, epochs=10000)
+    weight = softmax_train(X_train, y_train, learning_rate=0.1, epochs=25000)
     
     if x == 0:
         for i in range(0,len(weight)):
@@ -77,7 +77,7 @@ for x in range(0,10):
 
 average_weights = [i / 10 for i in average_weights]
 
-heaviest_weight, heaviest_index = find_heaviest(average_weights, Features_name)
+heaviest_weight, heaviest_index = find_heaviest(average_weights, heaviest_features)
 
 print(heaviest_weight)
 print()
