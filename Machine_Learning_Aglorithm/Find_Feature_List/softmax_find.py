@@ -33,9 +33,9 @@ def average_dicts(dict_list):
 
 def top_bottom_keys(data_dict):
     # 按值排序字典，获取值最大的15个键
-    top_keys = sorted(data_dict.items(), key=lambda item: item[1], reverse=True)[:15]
+    top_keys = sorted(data_dict.items(), key=lambda item: item[1], reverse=True)[:26]
     # 按值排序字典，获取值最小的15个键
-    bottom_keys = sorted(data_dict.items(), key=lambda item: item[1])[:15]
+    bottom_keys = sorted(data_dict.items(), key=lambda item: item[1])[:26]
     
     # 将元组列表转换成列表列表
     top_keys = [[key, value] for key, value in top_keys]
@@ -52,36 +52,37 @@ def find_heaviest(weights, features):
     
     return heaviest_weight, heaviest_index
 
-average_weights = []
+for m in range(0,20):
+    average_weights = []
 
-for x in range(0,8):
-    print("round ", x, " start")
-    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(3000,3000,1500,1500,1500,1500)
+    for x in range(0,10):
+        #print("round ", x, " start")
+        Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(700,700,1500,1500,1500,1500)
 
-    X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
+        X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 
-    weight = softmax_train(X_train, y_train, learning_rate=0.1, epochs=25000)
-    
-    if x == 0:
-        for i in range(0,len(weight)):
-            difference = weight[i][0] - weight[i][1]
-            if difference < 0:
-                difference = -difference
-            average_weights.append(difference)
-    else:
-        for i in range(0,len(weight)):
-            difference = weight[i][0] - weight[i][1]
-            if difference < 0:
-                difference = -difference
-            average_weights[i] += difference
+        weight = softmax_train(X_train, y_train, learning_rate=0.1, epochs=10000)
+        
+        if x == 0:
+            for i in range(0,len(weight)):
+                difference = weight[i][0] - weight[i][1]
+                if difference < 0:
+                    difference = -difference
+                average_weights.append(difference)
+        else:
+            for i in range(0,len(weight)):
+                difference = weight[i][0] - weight[i][1]
+                if difference < 0:
+                    difference = -difference
+                average_weights[i] += difference
 
-average_weights = [i / 10 for i in average_weights]
+    average_weights = [i / 10 for i in average_weights]
 
-heaviest_weight, heaviest_index = find_heaviest(average_weights, heaviest_features)
+    heaviest_weight, heaviest_index = find_heaviest(average_weights, heaviest_features)
 
-print(heaviest_weight)
-print()
-print(heaviest_index)
-print()
+    #print(heaviest_weight)
+    #print()
+    print(heaviest_index)
+    print()
 
 

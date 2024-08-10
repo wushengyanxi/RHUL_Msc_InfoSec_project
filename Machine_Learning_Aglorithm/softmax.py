@@ -4,13 +4,13 @@ import numbers
 
 def Softmax_preprocess_training(training_set, features_list):
 
-    #heaviest_features = ['bwd_pkts_payload.min', 'responp', 'flow_pkts_payload.avg', 'bwd_iat.tot',
-    #                     'flow_pkts_per_sec', 'payload_bytes_per_second', 'idle.avg', 
-    #                    'fwd_pkts_payload.max', 'fwd_pkts_tot', 'flow_iat.tot', 'fwd_iat.tot', 'fwd_pkts_payload.avg',
-    #                    'fwd_iat.min', 'idle.tot', 'fwd_header_size_tot', 'bwd_data_pkts_tot', 
-    #                    'flow_RST_flag_count', 'bwd_header_size_max', 'bwd_iat.std', 'fwd_pkts_payload.min',
-    #                    'flow_pkts_payload.max', 'flow_FIN_flag_count', 'Label']
-    
+    heaviest_features = ['bwd_pkts_payload.min', 'responp', 'flow_pkts_payload.avg', 'bwd_iat.tot',
+                         'flow_pkts_per_sec', 'payload_bytes_per_second', 'idle.avg', 
+                        'fwd_pkts_payload.max', 'fwd_pkts_tot', 'flow_iat.tot', 'fwd_iat.tot', 'fwd_pkts_payload.avg',
+                        'fwd_iat.min', 'idle.tot', 'fwd_header_size_tot', 'bwd_data_pkts_tot', 
+                        'flow_RST_flag_count', 'bwd_header_size_max', 'bwd_iat.std', 'fwd_pkts_payload.min',
+                        'flow_pkts_payload.max', 'flow_FIN_flag_count', 'Label']
+    '''
     heaviest_features = ['originp','responp', 'flow_duration', 'fwd_pkts_tot',
          'bwd_pkts_tot', 'fwd_data_pkts_tot', 'bwd_data_pkts_tot',
          'fwd_pkts_per_sec', 'bwd_pkts_per_sec', 'flow_pkts_per_sec',
@@ -31,7 +31,7 @@ def Softmax_preprocess_training(training_set, features_list):
          'active.min', 'active.max', 'active.tot', 'active.avg', 'active.std',
          'idle.min', 'idle.max', 'idle.tot', 'idle.avg', 'idle.std',
          'bwd_init_window_size', 'fwd_last_window_size', 'Label']
-
+    '''
     
 
     indices = {}
@@ -103,7 +103,6 @@ def compute_gradient(X, y_true, y_pred):
 
 # 训练函数
 def softmax_train(X, y, learning_rate=0.01, epochs=1000):
-    print("softmax training start")
     n_samples, n_features = X.shape
     n_classes = len(np.unique(y))
     
@@ -129,8 +128,8 @@ def softmax_train(X, y, learning_rate=0.01, epochs=1000):
         # 更新权重
         W -= learning_rate * dW
         
-        if epoch % 24000 == 0:
-            print(f'Epoch {epoch}, Loss: {loss}')
+        #if epoch % 24000 == 0:
+            #print(f'Epoch {epoch}, Loss: {loss}')
     
     return W
 
