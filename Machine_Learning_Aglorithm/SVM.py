@@ -64,7 +64,7 @@ def svm_preprocess_training(training_set, features_list):
     
     return X_train, y_train, scale_factors, heaviest_features
 
-def svm_train(X, y, kernel='linear', C=1.0):
+def svm_train(X, y, kernel='linear', C=1.0, max_iter=20000):
     """
     训练SVM模型
     :param X: 特征数据，形状为 (n_samples, n_features)
@@ -74,7 +74,7 @@ def svm_train(X, y, kernel='linear', C=1.0):
     :return: 训练好的SVM模型
     """
     print("SVM training start")
-    model = svm.SVC(kernel=kernel, C=C)
+    model = svm.SVC(kernel=kernel, C=C, max_iter=max_iter)
     model.fit(X, y)
     return model
 
@@ -112,4 +112,7 @@ def svm_each_test_sample_preprocess(test_sample, scale_factors, features_list, h
     testing_sample = np.array(testing_sample)
     
     return testing_sample
+
+
+
 
