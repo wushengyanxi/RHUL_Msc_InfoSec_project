@@ -103,6 +103,7 @@ def compute_gradient(X, y_true, y_pred):
 
 # 训练函数
 def softmax_train(X, y, learning_rate=0.01, epochs=1000):
+    print("softmax training start")
     n_samples, n_features = X.shape
     n_classes = len(np.unique(y))
     
@@ -128,8 +129,8 @@ def softmax_train(X, y, learning_rate=0.01, epochs=1000):
         # 更新权重
         W -= learning_rate * dW
         
-        #if epoch % 24000 == 0:
-            #print(f'Epoch {epoch}, Loss: {loss}')
+        if epoch % 1000 == 0:
+            print(f'Epoch {epoch}, Loss: {loss}')
     
     return W
 
