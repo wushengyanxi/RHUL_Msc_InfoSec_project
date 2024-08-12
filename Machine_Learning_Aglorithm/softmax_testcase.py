@@ -26,11 +26,14 @@ for i in range(0,10):
 
 print("start predicting test sample") 
 
+avg_correct_rate0 = 0
+avg_correct_rate1 = 0
+
 for i in range(0,20):
     
     print("round: ", i)
     
-    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(900,900,1500,1500,1500,1500)
+    Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(700,700,1500,1500,1500,1500)
 
     X_train, y_train, scale_factors, heaviest_features = Softmax_preprocess_training(Training_Data_Set, Features_name)
 
@@ -52,8 +55,9 @@ for i in range(0,20):
         if predict == samples[-1]:
             count += 1
 
-    correct_rate = count / len(all_test_sample_benign)
-    print("The correct rate for benign sample is: ", correct_rate)
+    correct_rate0 = count / len(all_test_sample_benign)
+    print("The correct rate for benign sample is: ", correct_rate0)
+    avg_correct_rate0 += correct_rate0
 
     count = 0
     for samples in all_test_sample_malicious:
@@ -62,5 +66,9 @@ for i in range(0,20):
         if predict == samples[-1]:
             count += 1
 
-    correct_rate = count / len(all_test_sample_malicious)
-    print("The correct rate for malicious sample is: ", correct_rate)
+    correct_rate1 = count / len(all_test_sample_malicious)
+    print("The correct rate for malicious sample is: ", correct_rate1)
+    avg_correct_rate1 += correct_rate1
+
+print("softmax total correct rate for benign sample is: ", avg_correct_rate0 / 20)
+print("softmax total correct rate for malicious sample is: ", avg_correct_rate1 / 20)

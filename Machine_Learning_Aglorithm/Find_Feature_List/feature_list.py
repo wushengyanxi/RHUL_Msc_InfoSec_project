@@ -1,3 +1,7 @@
+from collections import Counter
+from collections import defaultdict
+import random
+
 model = ['originp','responp', 'flow_duration', 'fwd_pkts_tot',
          'bwd_pkts_tot', 'fwd_data_pkts_tot', 'bwd_data_pkts_tot',
          'fwd_pkts_per_sec', 'bwd_pkts_per_sec', 'flow_pkts_per_sec',
@@ -81,40 +85,170 @@ G38 = [1, 32, 17, 12, 8, 7, 57, 51, 10, 15, 6, 61, 28, 30, 58, 47, 55, 4, 42, 5,
 G39 = [1, 32, 8, 17, 54, 57, 78, 15, 51, 12, 30, 7, 28, 10, 40, 19, 52, 56, 44, 39, 53, 47, 3, 72, 21]
 G40 = [1, 32, 7, 12, 17, 15, 78, 57, 47, 40, 10, 49, 24, 9, 28, 4, 74, 52, 30, 75, 6, 25, 3, 14, 29]
 
-[1, 32, 15, 17, 7, 12, 9, 47, 57, 45, 4, 8, 78, 24, 5, 42, 26, 10, 14, 30, 74, 48, 28, 22, 59]
 
-[1, 32, 15, 12, 17, 47, 57, 9, 10, 7, 8, 78, 30, 74, 28, 22, 14, 2, 54, 45, 6, 73, 36, 51, 5]
+top_25_level = [G1_25000,G2,G3,G4,G6,G7,G8,G9,G10,G11,G12,G13,G14,G15,G16,G17,G18,G19,G20,G21,G22,G23,G24,G25_10000,G26,G27,G28,G29,G30,G31,G32,G33,G34,G35,G36,G37,G38,G39,G40]
 
-[1, 32, 12, 17, 9, 15, 8, 78, 57, 28, 30, 26, 7, 29, 10, 54, 11, 14, 44, 55, 68, 59, 45, 2, 16]
+'''
+def unique_elements(lst):
+    seen = set()
+    unique_lst = []
+    for item in lst:
+        if item not in seen:
+            unique_lst.append(item)
+            seen.add(item)
+    return unique_lst
 
-[1, 32, 17, 15, 12, 9, 47, 57, 7, 40, 2, 28, 44, 8, 20, 78, 26, 10, 22, 49, 34, 51, 69, 41, 18]
 
-[1, 32, 17, 12, 8, 15, 7, 57, 47, 40, 28, 10, 2, 5, 43, 54, 9, 45, 48, 55, 44, 78, 67, 30, 61]
+top25_level = unique_elements(top_25_level)
 
-[1, 32, 15, 9, 12, 17, 59, 49, 57, 44, 30, 7, 28, 78, 52, 3, 51, 11, 65, 29, 68, 45, 40, 53, 39]
+# this is add those lists one by one, rather than append them together
 
-[1, 32, 17, 8, 57, 12, 15, 30, 9, 78, 51, 7, 52, 47, 48, 73, 10, 40, 49, 74, 44, 60, 46, 56, 19]
 
-[1, 32, 17, 57, 12, 8, 7, 28, 78, 22, 15, 26, 72, 34, 30, 53, 9, 10, 29, 14, 40, 4, 45, 69, 60]
+print(top25_level)
 
-[1, 32, 17, 78, 12, 15, 9, 57, 51, 3, 10, 8, 28, 30, 4, 69, 24, 40, 44, 47, 48, 5, 7, 19, 20]
+'''
 
-[1, 32, 12, 17, 9, 57, 78, 15, 7, 54, 10, 26, 47, 28, 23, 11, 21, 75, 52, 8, 35, 39, 20, 30, 58]
+top25_level = [1, 32, 15, 57, 12, 10, 17, 47, 51, 18, 28, 3, 9, 39, 74, 11, 53, 2, 40, 30, 68, 69, 60, 54, 49, 7, 31, 26, 6, 48, 35, 14, 8, 34, 58, 20, 4, 65, 24, 70, 36, 27, 73, 52, 29, 67, 5, 72, 37, 78, 50, 45, 61, 75, 43, 42, 56, 44, 59, 41, 16, 22, 33, 46, 55, 23, 21, 19, 25]
+# all the number which at least exist 1 time in those list above
+'''
+def frequency_sorted_elements(lst):
+    # Count the frequency of each element in the list
+    counter = Counter(lst)
+    
+    # Initialize an empty list to store the sorted items
+    sorted_items = []
+    
+    # Iterate through the counter and store elements with their frequencies
+    for item in counter.items():
+        # Extract the element and its frequency
+        element = item[0]
+        frequency = item[1]
+        # Append the element and its frequency to the sorted_items list
+        sorted_items.append((element, frequency))
+    
+    # Sort the list: first by frequency in descending order, 
+    # and then by the element value in ascending order
+    sorted_items.sort(key=lambda x: (-x[1], x[0]))
+    
+    # Extract the elements from the sorted list
+    sorted_elements = []
+    for item in sorted_items:
+        sorted_elements.append(item[0])
+    
+    return sorted_elements
 
-[1, 32, 9, 17, 12, 15, 57, 8, 26, 47, 10, 28, 78, 4, 60, 30, 51, 16, 7, 49, 23, 35, 39, 74, 37]
+top25_level_with_highest_frequency = frequency_sorted_elements(top_25_level)
+'''
+top25_level_with_highest_frequency = [12, 15, 17, 32, 57, 1, 10, 28, 47, 30, 40, 51, 7, 49, 69, 39, 18, 8, 60, 3, 9, 78, 24, 58, 74, 26, 20, 29, 22, 34, 54, 45, 2, 4, 53, 5, 11, 14, 36, 41, 52, 59, 31, 68, 6, 35, 43, 48, 67, 42, 44, 55, 73, 16, 19, 37, 61, 27, 70, 75, 21, 23, 46, 50, 56, 72, 25, 33, 65]
+# sort by the frequency which each number show in those list above, from left to right (12 has highest frequency)
 
-[1, 32, 17, 57, 8, 15, 12, 44, 78, 7, 51, 40, 9, 74, 72, 30, 4, 47, 10, 19, 18, 22, 34, 11, 69]
 
-[1, 32, 57, 15, 7, 12, 17, 78, 22, 54, 65, 9, 11, 2, 40, 10, 20, 26, 28, 47, 30, 43, 14, 4, 18]
+def most_frequent_values(nested_list):
+    if not nested_list:
+        return []
 
-[1, 32, 12, 17, 15, 57, 9, 47, 39, 8, 28, 78, 44, 10, 7, 74, 46, 40, 11, 5, 53, 60, 30, 38, 73]
+    # Initialize a list of dictionaries to count occurrences of each index
+    count_dicts = [defaultdict(int) for _ in range(len(nested_list[0]))]
 
-[1, 32, 8, 17, 12, 57, 15, 78, 28, 26, 7, 47, 53, 30, 49, 10, 20, 40, 59, 33, 44, 39, 70, 9, 14]
+    # Count occurrences of each value at each index
+    for sublist in nested_list:
+        for index, value in enumerate(sublist):
+            count_dicts[index][value] += 1
 
-[1, 32, 12, 17, 15, 57, 78, 8, 7, 58, 45, 40, 47, 28, 30, 24, 10, 6, 44, 60, 69, 4, 68, 75, 3]
+    # Find the most frequent value at each index
+    result = []
+    for count_dict in count_dicts:
+        most_frequent_value = max(count_dict, key=count_dict.get)
+        result.append(most_frequent_value)
 
-[1, 32, 12, 17, 7, 15, 47, 57, 3, 8, 10, 78, 28, 46, 65, 49, 9, 21, 45, 51, 44, 4, 75, 40, 30]
+    return result
 
-[1, 32, 15, 7, 12, 17, 57, 30, 8, 78, 9, 28, 54, 34, 3, 75, 69, 11, 40, 10, 68, 22, 61, 37, 20]
+heaviest_features_seq = most_frequent_values(top_25_level)
+heaviest_features_seq = [1, 32, 15, 12, 12, 17, 10, 28, 51, 28, 40, 60, 28, 40, 49, 69, 49, 39, 40, 29, 48, 37, 24, 60, 49]
 
-[1, 32, 15, 78, 17, 12, 49, 57, 8, 9, 28, 10, 7, 39, 18, 73, 30, 24, 4, 40, 36, 27, 29, 51, 26]
+unique_heaviest_features_seq = []
+[unique_heaviest_features_seq.append(x) for x in heaviest_features_seq if x not in unique_heaviest_features_seq]
+unique_heaviest_features_seq = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24] # len:17
+
+
+'''
+So far, we know the following information
+
+First, after 40 tests, each test is trained for 10 cycles, each cycle is tens of thousands of rounds, 
+and the average is taken to see which features have the largest proportion. This can be referred to unique_heaviest_features_seq
+
+On the other hand, we also know which features appear most frequently in the so-called "top 25 weighted" list,
+which can be found in top25_level_with_highest_frequency
+
+Tip: For numbers with the same frequency, the list is sorted by value.
+
+'''
+
+def difference(A, B):
+    # transfer list to set
+    set_A = set(A)
+    result = [x for x in B if x not in set_A]
+    return result
+
+different = difference(unique_heaviest_features_seq, top25_level_with_highest_frequency) # len 52
+random.shuffle(different)
+different = [42, 56, 70, 36, 43, 2, 8, 7, 33, 6, 19, 27, 41, 11, 22, 46, 20, 54, 30, 44, 65, 35, 4, 14, 31, 34, 72, 67, 75, 45, 47, 59, 53, 3, 57, 52, 16, 25, 9, 50, 18, 68, 74, 23, 61, 55, 73, 26, 58, 78, 21, 5]
+'''
+I retain 17 features in unique_heaviest_features_seq as core features to ensure accuracy, 
+and randomly select 8 features from difference to make up 25 features, 
+to ensure that each model does not completely rely on the same features for prediction.
+
+'''
+
+
+F1 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 42, 56, 70, 36, 43, 2, 8, 7]
+F2 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 33, 6, 19, 27, 41, 11, 22, 46]
+F3 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 20, 54, 30, 44, 65, 35, 4, 14]
+F4 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 31, 34, 72, 67, 75, 45, 47, 59]
+F5 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 53, 3, 57, 52, 16, 25, 9, 50]
+F6 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 18, 68, 74, 23, 61, 55, 73, 26]
+
+F7 = []
+
+for i in F6:
+    F7.append(heaviest_features[i])
+F7 = F7+['Label']
+print(F7)
+
+F1 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min',
+      'flow_FIN_flag_count', 'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std',
+      'flow_pkts_payload.avg', 'bwd_subflow_bytes', 'bwd_iat.tot', 'active.tot',
+      'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min',
+      'bwd_URG_flag_count', 'fwd_iat.min', 'flow_iat.std', 'active.avg', 'bwd_pkts_payload.std',
+      'fwd_iat.max', 'flow_duration', 'bwd_pkts_per_sec', 'fwd_pkts_per_sec','Label'] # given to LR
+
+F2 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
+      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
+      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
+      'flow_pkts_payload.min', 'bwd_URG_flag_count', 'bwd_pkts_payload.max', 'bwd_data_pkts_tot',
+      'flow_RST_flag_count', 'fwd_pkts_payload.min', 'flow_pkts_payload.std', 'fwd_header_size_tot',
+      'flow_ACK_flag_count', 'fwd_iat.std', 'Label']
+
+F3 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
+      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
+      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
+      'flow_pkts_payload.min', 'bwd_URG_flag_count', 'fwd_PSH_flag_count', 'flow_iat.tot', 'fwd_pkts_payload.avg',
+      'fwd_iat.tot', 'fwd_bulk_rate', 'bwd_pkts_payload.avg', 'bwd_pkts_tot', 'bwd_header_size_tot', 'Label']
+
+F4 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
+      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
+      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min',
+      'bwd_URG_flag_count', 'fwd_pkts_payload.std', 'bwd_pkts_payload.tot', 'idle.min', 'active.min',
+      'idle.avg', 'fwd_iat.avg', 'bwd_iat.min', 'bwd_subflow_pkts', 'Label']
+
+F5 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count', 
+      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes', 
+      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min', 
+      'bwd_URG_flag_count', 'flow_iat.max', 'fwd_pkts_tot', 'payload_bytes_per_second', 'flow_iat.min', 'bwd_header_size_max', 
+      'flow_CWR_flag_count', 'flow_pkts_per_sec', 'bwd_iat.avg', 'Label']
+
+F6 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count', 'down_up_ratio',
+      'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes', 'bwd_iat.tot', 'active.tot',
+      'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min', 'bwd_URG_flag_count',
+      'flow_SYN_flag_count', 'active.max', 'idle.tot', 'fwd_URG_flag_count', 'fwd_bulk_bytes', 'flow_iat.avg', 'idle.max',
+      'flow_ECE_flag_count', 'Label']
