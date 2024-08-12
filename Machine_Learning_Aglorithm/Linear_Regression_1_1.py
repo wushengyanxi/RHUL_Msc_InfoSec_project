@@ -8,21 +8,11 @@ import numbers
 
 
 def LR_preprocess_data(training_set, features_list):
-    #heaviest_features = ['bwd_pkts_payload.max', 'flow_ACK_flag_count', 'fwd_iat.max', 'active.tot', 'active.avg', 'bwd_header_size_max', 'flow_iat.tot', 'idle.max',
-    #                    'active.min', 'bwd_pkts_payload.tot', 'flow_SYN_flag_count', 'bwd_iat.std', 'flow_FIN_flag_count', 'originp', 'Unnamed: 0.1', 'fwd_PSH_flag_count',
-    #                   'bwd_header_size_min', 'flow_duration', 'bwd_pkts_payload.avg', 'fwd_pkts_payload.std', 'fwd_header_size_max', 'flow_pkts_payload.avg', 'fwd_bulk_rate',
-    #                  'fwd_header_size_tot', 'fwd_pkts_payload.avg', 'bwd_bulk_bytes', 'bwd_pkts_payload.min', 'fwd_iat.min', 'flow_pkts_payload.std', 'flow_iat.max', 'Label']
-    #heaviest_features = ['flow_ACK_flag_count', 'fwd_iat.max', 'active.tot', 'bwd_header_size_max', 'flow_iat.tot','active.min','flow_SYN_flag_count', 'bwd_iat.std',
-     #                'flow_FIN_flag_count', 'originp', 'Unnamed: 0.1', 'fwd_PSH_flag_count','bwd_header_size_min', 'flow_duration', 'fwd_pkts_payload.std', 'fwd_header_size_max',
-      #                  'flow_pkts_payload.avg', 'fwd_bulk_rate','fwd_header_size_tot', 'fwd_pkts_payload.avg', 'bwd_bulk_bytes', 'bwd_pkts_payload.min', 'fwd_iat.min', 'flow_pkts_payload.std',
-       #                 'flow_iat.max', 'Label']
-       
-    heaviest_features = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min',
-      'flow_FIN_flag_count', 'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std',
-      'flow_pkts_payload.avg', 'bwd_subflow_bytes', 'bwd_iat.tot', 'active.tot',
-      'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min',
-      'bwd_URG_flag_count', 'fwd_iat.min', 'flow_iat.std', 'active.avg', 'bwd_pkts_payload.std',
-      'fwd_iat.max', 'flow_duration', 'bwd_pkts_per_sec', 'fwd_pkts_per_sec','Label']
+    heaviest_features = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count', 
+      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes', 
+      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min', 
+      'bwd_URG_flag_count', 'flow_iat.max', 'fwd_pkts_tot', 'payload_bytes_per_second', 'flow_iat.min', 'bwd_header_size_max', 
+      'flow_CWR_flag_count', 'flow_pkts_per_sec', 'bwd_iat.avg', 'Label']
 
     indices = {}
     for feature in heaviest_features:

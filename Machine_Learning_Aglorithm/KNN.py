@@ -6,9 +6,11 @@ import numbers
 
 def KNN_preprocess_training(training_set, features_list):
     
-    heaviest_features = ['bwd_pkts_payload.min', 'responp', 'flow_pkts_payload.avg', 'bwd_iat.tot', 'flow_pkts_per_sec', 'payload_bytes_per_second', 'idle.avg', 
-     'fwd_pkts_payload.max', 'fwd_pkts_tot', 'flow_iat.tot', 'fwd_iat.tot', 'fwd_pkts_payload.avg', 'fwd_iat.min', 'idle.tot', 'fwd_header_size_tot', 'bwd_data_pkts_tot', 
-     'flow_RST_flag_count', 'bwd_header_size_max', 'bwd_iat.std', 'fwd_pkts_payload.min', 'flow_pkts_payload.max', 'flow_FIN_flag_count', 'Label']
+    heaviest_features = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
+      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
+      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
+      'flow_pkts_payload.min', 'bwd_URG_flag_count', 'fwd_PSH_flag_count', 'flow_iat.tot', 'fwd_pkts_payload.avg',
+      'fwd_iat.tot', 'fwd_bulk_rate', 'bwd_pkts_payload.avg', 'bwd_pkts_tot', 'bwd_header_size_tot', 'Label']
     
     indices = {}
     for feature in heaviest_features:
