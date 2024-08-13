@@ -201,6 +201,9 @@ to ensure that each model does not completely rely on the same features for pred
 '''
 
 
+
+
+
 F1 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 42, 56, 70, 36, 43, 2, 8, 7]
 F2 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 33, 6, 19, 27, 41, 11, 22, 46]
 F3 = [1, 32, 15, 12, 17, 10, 28, 51, 40, 60, 49, 69, 39, 29, 48, 37, 24, 20, 54, 30, 44, 65, 35, 4, 14]
@@ -220,20 +223,20 @@ F1 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size
       'flow_pkts_payload.avg', 'bwd_subflow_bytes', 'bwd_iat.tot', 'active.tot',
       'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min',
       'bwd_URG_flag_count', 'fwd_iat.min', 'flow_iat.std', 'active.avg', 'bwd_pkts_payload.std',
-      'fwd_iat.max', 'flow_duration', 'bwd_pkts_per_sec', 'fwd_pkts_per_sec','Label'] # given to LR
+      'fwd_iat.max', 'flow_duration', 'bwd_pkts_per_sec', 'fwd_pkts_per_sec','Label'] # given to SVM
 
 F2 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
       'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
       'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
       'flow_pkts_payload.min', 'bwd_URG_flag_count', 'bwd_pkts_payload.max', 'bwd_data_pkts_tot',
       'flow_RST_flag_count', 'fwd_pkts_payload.min', 'flow_pkts_payload.std', 'fwd_header_size_tot',
-      'flow_ACK_flag_count', 'fwd_iat.std', 'Label']
+      'flow_ACK_flag_count', 'fwd_iat.std', 'Label'] # given to softmax
 
 F3 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
       'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
       'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
       'flow_pkts_payload.min', 'bwd_URG_flag_count', 'fwd_PSH_flag_count', 'flow_iat.tot', 'fwd_pkts_payload.avg',
-      'fwd_iat.tot', 'fwd_bulk_rate', 'bwd_pkts_payload.avg', 'bwd_pkts_tot', 'bwd_header_size_tot', 'Label']
+      'fwd_iat.tot', 'fwd_bulk_rate', 'bwd_pkts_payload.avg', 'bwd_pkts_tot', 'bwd_header_size_tot', 'Label'] # given to knn
 
 F4 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
       'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
@@ -245,7 +248,7 @@ F5 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size
       'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes', 
       'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min', 
       'bwd_URG_flag_count', 'flow_iat.max', 'fwd_pkts_tot', 'payload_bytes_per_second', 'flow_iat.min', 'bwd_header_size_max', 
-      'flow_CWR_flag_count', 'flow_pkts_per_sec', 'bwd_iat.avg', 'Label']
+      'flow_CWR_flag_count', 'flow_pkts_per_sec', 'bwd_iat.avg', 'Label'] # given to LR
 
 F6 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count', 'down_up_ratio',
       'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes', 'bwd_iat.tot', 'active.tot',

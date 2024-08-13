@@ -66,7 +66,7 @@ def BruteForce_User_Script():
     client_ID = client_fileno + random_int
     client_ID = "Bruteforce" + str(client_ID)
     sleep_time = random.randint(0,2)
-    attack_strategy = [["crazy",1],["normal",5],["latency",15]]
+    attack_strategy = [["crazy",1],["normal",3],["latency",5]]
     message_amount = 0
     count = 0
 
@@ -100,7 +100,7 @@ def Scanner_User_Script():
     client_ID = client_fileno + random_int
     client_ID = "Scanner" + str(client_ID)
     sleep_time = random.randint(0,2)
-    attack_strategy = [["crazy",1],["normal",5],["latency",15]]
+    attack_strategy = [["crazy",1],["normal",3],["latency",5]]
     message_amount = 0
     count = 0
 
@@ -109,6 +109,45 @@ def Scanner_User_Script():
             #print(f"Malicious Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
         sample_index = random.randint(0, len(Sample_dict["Bruteforce_XML"]))
         test_sample = Sample_dict["Bruteforce"][sample_index]
+
+        random_port = random.randint(1, 10)
+        port_num = 8081 + random_port
+        server_address = ("127.0.0.1", port_num)
+
+        if connect_to_server(client_socket, server_address):
+
+            message = [client_ID, test_sample]
+            transfer_data_package = pickle.dumps(message)
+            client_socket.send(transfer_data_package)
+            message_amount += 1
+            client_socket.close()
+            time.sleep(attack_strategy[sleep_time][1])
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+def Causative_Attacker_User_Script():
+    global Sample_dict
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    client_fileno = client_socket.fileno()
+    random_int = random.randint(1, 9999)
+    client_ID = client_fileno + random_int
+    client_ID = "Causative_Attacker" + str(client_ID)
+    sleep_time = random.randint(0,2)
+    attack_strategy = [["crazy",1],["normal",3],["latency",5]]
+    message_amount = 0
+    count = 0
+
+    while True:
+        #if message_amount%20 == 0 and message_amount != 0:
+            #print(f"Malicious Client {client_ID} has sent {message_amount} messages and got {count} correct responses.")
+        sample_index = random.randint(0, len(Sample_dict["Bruteforce_XML"]))
+        test_sample = Sample_dict["Bruteforce"][sample_index]
+        test_sample[22] = test_sample[22] * 1.5
+        test_sample[15] = test_sample[15] * 1.8
+        test_sample[33] = test_sample[33] * 0.1
+        test_sample[75] = test_sample[75] * 0.5
+        test_sample[34] = test_sample[34] * 1.5
 
         random_port = random.randint(1, 10)
         port_num = 8081 + random_port
@@ -141,6 +180,10 @@ def multi_client_script_thread():
     for i in range(0, Amount_and_types[2][0]):
         Client_Script_Threads.append(
             threading.Thread(target=Scanner_User_Script))
+    
+    for i in range(0, Amount_and_types[3][0]):
+        Client_Script_Threads.append(
+            threading.Thread(target=Causative_Attacker_User_Script))
     
     for thread in Client_Script_Threads:
         thread.start()
@@ -198,7 +241,7 @@ Sample_dict = {
     "XMRIGCC": XMRIGCC_CryptoMiner_TestingSet
 }
 
-Amount_and_types = [[20, "Benign"],[3,"BruteForce"],[5,"scanner"],[]]
+Amount_and_types = [[5, "Benign"],[3,"BruteForce"],[5,"scanner"],[3,"Causative_Attacker"]]
 # Amount_and_types 是所有类型的用户的汇总，每个元素是一个列表，第一个元素是该类型用户的数量，第二个元素是该类型用户的类型
 # 理想情况下，Amount_and_type中应该含有 [[50,良性用户],[3，爆破用户],[5，扫描用户],[2，数据污染用户],[？未知策略攻击者？]]
 # 最好是在multi_client_script_thread()函数中，使用若干个for循环来依次启动各类用户，对于每一类而言，使用一个for循环来依次启动每个用户，从而保证每个用户的行为尽可能独立和可定制化

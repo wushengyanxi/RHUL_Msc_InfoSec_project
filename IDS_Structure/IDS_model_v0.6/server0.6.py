@@ -39,14 +39,24 @@ def read_log_file():
 
 def specific_client_traffic_log_update(specific_user_traffic_log, client_traffic, normal_distribution):
 
+    if specific_user_traffic_log[1] >= 15:
+        specific_user_traffic_log[1] = 0
+        specific_user_traffic_log[2] = [0 for i in range(7, 86)]
+        specific_user_traffic_log[3] = 0
+        # 在这里，如果特定用户的流量日志中的特征超过了15次，那么就将这个特定用户的流量日志清零
+        # 我们的系统找出攻击者的方式，是检查用户流量超过标准差或被判为恶性的次数
+        # 这是为了防止某个长期连接的良性用户的凭据被披露后，攻击者依靠该用户长期积攒的“流量信用”展开攻击
+        # 也为了避免极大值导致的潜在风险（鲁棒性方面）
+        
+    
     specific_user_traffic_log[1] += 1
 
     for specific_feature in range(7, 86):
         current_value = client_traffic[specific_feature]
         mean = normal_distribution[specific_feature-7][0]
         std = normal_distribution[specific_feature-7][1]
-        upper_bound = mean + 3*std
-        lower_bound = mean - 3*std
+        upper_bound = mean + 2*std
+        lower_bound = mean - 2*std
         if current_value > upper_bound or current_value < lower_bound:
 
             specific_user_traffic_log[2][specific_feature-7] += 1
@@ -335,8 +345,9 @@ if __name__ == '__main__':
     print("Training data set has sample amount: ", len(Training_Data_Set))
     print("Testing data set sample amount: ", len(Testing_Data_Set))
     Scale_Weight = Ensemble_Learning_Training(Features_List, Training_Data_Set)
+    Features_List, Benign_Training_Data_Set, No_Need_Testing_Data_Set = Training_set_create(1500,1500,0,0,0,0) # new
     Decision_Record = []
-    normal_distribution_param = get_normal_distribution(Training_Data_Set)
+    normal_distribution_param = get_normal_distribution(Benign_Training_Data_Set) # new
     User_Traffic_Log = []
     Client_List = []
     attacker_list = []

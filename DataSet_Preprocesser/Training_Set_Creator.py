@@ -127,6 +127,7 @@ def Training_set_create(Background=2000, Benign=3000, Bruteforce_XML=2000, Brute
 if __name__ == "__main__":
 
     Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create()
+    '''
     print("the features list is: ", Features_name)
     print()
     print("length of features list is: ", len(Features_name))
@@ -135,3 +136,12 @@ if __name__ == "__main__":
     print(Training_Data_Set[0])
     print()
     print("length of one of the sample in training set is: ", len(Training_Data_Set[0]))
+    '''
+    print(Features_name.index("fwd_header_size_min"))
+    print(Features_name.index("flow_FIN_flag_count"))
+    print(Features_name.index("down_up_ratio"))
+    print(Features_name.index("fwd_pkts_payload.max"))
+    print(Features_name.index("active.tot"))
+    print(Features_name.index("fwd_pkts_payload.tot"))
+
+ 

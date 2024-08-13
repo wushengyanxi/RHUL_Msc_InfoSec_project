@@ -64,7 +64,7 @@ def svm_preprocess_training(training_set, features_list):
     
     return X_train, y_train, scale_factors, heaviest_features
 
-def svm_train(X, y, kernel='linear', C=1.0, max_iter=20000):
+def svm_train(X, y, kernel='linear', C=1.0, max_iter=60000):
     """
     训练SVM模型
     :param X: 特征数据，形状为 (n_samples, n_features)
