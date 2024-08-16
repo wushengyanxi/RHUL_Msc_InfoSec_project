@@ -11,6 +11,10 @@ from KNN import KNN_each_test_sample_preprocess
 
 avg_correct_rate0 = 0
 avg_correct_rate1 = 0
+True_positive = 0
+True_negative = 0
+False_positive = 0
+False_negative = 0
 
 for x in range(0,20):
     
@@ -31,6 +35,8 @@ for x in range(0,20):
         prediction = KNN_predict(testing_sample[:-1], Kdtree, k=3)
         if prediction == 0: #samples[-1]:
             count += 1
+    True_positive += count
+    False_positive += len(all_test_sample_benign)-count
 
     correct_rate0 = count / len(all_test_sample_benign)
     print("The correct rate for benign sample is: ", correct_rate0)
@@ -42,6 +48,8 @@ for x in range(0,20):
         prediction = KNN_predict(testing_sample[:-1], Kdtree, k=3)
         if prediction == 1: #samples[-1]:
             count += 1
+    True_negative += count
+    False_negative += len(all_test_sample_malicious)-count
 
     correct_rate1 = count / len(all_test_sample_malicious)
     print("The correct rate for malicious sample is: ", correct_rate1)
@@ -49,3 +57,17 @@ for x in range(0,20):
     
 print("knn total correct rate for benign sample is: ", avg_correct_rate0 / 20)
 print("knn total correct rate for malicious sample is: ", avg_correct_rate1 / 20)
+
+True_positive = True_positive/20
+True_negative = True_negative/20
+False_positive = False_positive/20
+False_negative = False_negative/20
+
+Accuracy = (True_positive+True_negative)/(True_positive+True_negative+False_positive+False_negative)
+print("Accuracy: ", Accuracy)
+Precision = True_positive/(True_positive+False_positive)
+print("Precision: ", Precision)
+Recall = True_positive/(True_positive+False_negative)
+print("Recall: ", Recall)
+F1_score = 2*(Precision*Recall)/(Precision+Recall)
+print("F1 score: ", F1_score)

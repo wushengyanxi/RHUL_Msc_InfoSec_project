@@ -216,7 +216,7 @@ F7 = []
 for i in F6:
     F7.append(heaviest_features[i])
 F7 = F7+['Label']
-print(F7)
+# print(F7)
 
 F1 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min',
       'flow_FIN_flag_count', 'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std',
@@ -255,3 +255,5 @@ F6 = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size
       'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min', 'bwd_URG_flag_count',
       'flow_SYN_flag_count', 'active.max', 'idle.tot', 'fwd_URG_flag_count', 'fwd_bulk_bytes', 'flow_iat.avg', 'idle.max',
       'flow_ECE_flag_count', 'Label']
+
+print(len(top25_level_with_highest_frequency))
