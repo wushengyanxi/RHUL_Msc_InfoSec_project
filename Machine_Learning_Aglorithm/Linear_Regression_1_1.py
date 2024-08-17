@@ -71,7 +71,7 @@ class LinearRegressionModel(nn.Module):
         return self.linear(x)
 
 
-def train_linear_regression(X, y, epochs=10000, learning_rate=0.001):
+def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
     print("linear regression training start")
     # Convert to tensor
     X = torch.tensor(X, dtype=torch.float32)

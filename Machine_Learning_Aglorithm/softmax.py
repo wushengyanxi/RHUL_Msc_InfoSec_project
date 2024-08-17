@@ -80,7 +80,7 @@ def compute_gradient(X, y_true, y_pred):
     return grad
 
 # 训练函数
-def softmax_train(X, y, learning_rate=0.01, epochs=1000):
+def softmax_train(X, y, learning_rate=0.01, epochs=30000):
     print("softmax training start")
     n_samples, n_features = X.shape
     n_classes = len(np.unique(y))
