@@ -15,7 +15,7 @@ Recall_list = []
 F1_score_list = []
 
 
-for m in range(0,10):
+for m in range(0,20):
     avg_correct_rate0 = 0
     avg_correct_rate1 = 0
     True_positive = 0
@@ -42,8 +42,8 @@ for m in range(0,10):
             prediction = KNN_predict(testing_sample[:-1], Kdtree, k=3)
             if prediction == 0: #samples[-1]:
                 count += 1
-        True_positive += count
-        False_positive += len(all_test_sample_benign)-count
+        True_negative += count
+        False_negative += len(all_test_sample_benign)-count
 
         correct_rate0 = count / len(all_test_sample_benign)
         print("The correct rate for benign sample is: ", correct_rate0)
@@ -55,8 +55,8 @@ for m in range(0,10):
             prediction = KNN_predict(testing_sample[:-1], Kdtree, k=3)
             if prediction == 1: #samples[-1]:
                 count += 1
-        True_negative += count
-        False_negative += len(all_test_sample_malicious)-count
+        True_positive += count
+        False_positive += len(all_test_sample_malicious)-count
 
         correct_rate1 = count / len(all_test_sample_malicious)
         print("The correct rate for malicious sample is: ", correct_rate1)

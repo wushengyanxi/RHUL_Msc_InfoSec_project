@@ -12,7 +12,7 @@ Recall_list = []
 F1_score_list = []
 
 
-for m in range(0,10):
+for m in range(0,20):
     
     True_positive = 0
     True_negative = 0
@@ -34,15 +34,15 @@ for m in range(0,10):
             predict_decition, reliable = Ensemble_Learning_Decision(Ensemble_param, sample, Features_name)
             if predict_decition == sample[-1]:
                 count += 1
-        True_positive += count
-        False_positive += len(all_test_sample_benign)-count
+        True_negative += count
+        False_negative += len(all_test_sample_benign)-count
 
         for sample in all_test_sample_malicious:
             predict_decition, reliable = Ensemble_Learning_Decision(Ensemble_param, sample, Features_name)
             if predict_decition == sample[-1]:
                 count += 1
-        True_negative += count
-        False_negative += len(all_test_sample_malicious)-count  
+        True_positive += count
+        False_positive += len(all_test_sample_malicious)-count  
 
     
     True_positive = True_positive/20
