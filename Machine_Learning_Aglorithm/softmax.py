@@ -173,7 +173,7 @@ def softmax_train(X, y, learning_rate=0.4, epochs=30000):
     Returns:
     - numpy.ndarray: The trained weights of the softmax regression model.
     """
-    print("softmax training start")
+    #print("softmax training start")
     n_samples, n_features = X.shape
     n_classes = len(np.unique(y))
     
@@ -199,8 +199,8 @@ def softmax_train(X, y, learning_rate=0.4, epochs=30000):
         # Update weights
         W -= learning_rate * dW
         
-        if epoch % 1000 == 0:
-            print(f'Epoch {epoch}, Loss: {loss}')
+        #if epoch % 1000 == 0:
+            #print(f'Epoch {epoch}, Loss: {loss}')
     
     return W
 

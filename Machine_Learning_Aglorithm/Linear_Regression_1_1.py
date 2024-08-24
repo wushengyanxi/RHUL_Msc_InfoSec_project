@@ -127,7 +127,7 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
     Notes:
     - The training duration is printed at the end of the training process.
     """
-    print("linear regression training start")
+    #print("linear regression training start")
     # Convert to tensor
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
@@ -153,8 +153,8 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
         optimizer.step()
 
         # Print loss for every 100 epochs
-        if (epoch + 1) % 1000 == 0:
-            print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
+        #if (epoch + 1) % 1000 == 0:
+            #print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
 
     # Extract weights
     weights = model.linear.weight.data.numpy().flatten()

@@ -108,7 +108,7 @@ def svm_train(X, y, kernel='linear', C=1.0, max_iter=60000):
     Returns:
     - svm.SVC: The trained SVM model.
     """
-    print("SVM training start")
+    #print("SVM training start")
     model = svm.SVC(kernel=kernel, C=C, max_iter=max_iter)
     model.fit(X, y)
     return model

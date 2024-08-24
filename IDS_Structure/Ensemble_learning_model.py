@@ -64,6 +64,7 @@ def Ensemble_Learning_Training(feature_list, Data):
     LR_correct_rate = 0
     LR_weights = None
     LR_scale_factors = None
+    print("linear regression training start")
     for i in range(0,5):
         training_set = k_fold[i][0]
         testing_set = k_fold[i][1]
@@ -85,6 +86,7 @@ def Ensemble_Learning_Training(feature_list, Data):
     svm_correct_rate = 0
     svm_model = None
     svm_scale_factors = None
+    print("SVM training start")
     for i in range(0,5):
         training_set = k_fold[i][0]
         testing_set = k_fold[i][1]
@@ -106,6 +108,7 @@ def Ensemble_Learning_Training(feature_list, Data):
     knn_correct_rate = 0
     Kdtree = None
     knn_scale_factors = None
+    print("KNN training start")
     for i in range(0,5):
         training_set = k_fold[i][0]
         testing_set = k_fold[i][1]
@@ -127,6 +130,7 @@ def Ensemble_Learning_Training(feature_list, Data):
     softmax_correct_rate = 0
     softmax_weights = None
     softmax_scale_factors = None
+    print("softmax training start")
     for i in range(0,5):
         training_set = k_fold[i][0]
         testing_set = k_fold[i][1]
@@ -143,7 +147,7 @@ def Ensemble_Learning_Training(feature_list, Data):
             softmax_weights = current_softmax_weights
             softmax_scale_factors = current_softmax_scale_factors
     Ensemble_parameters.append([softmax_weights, softmax_scale_factors, softmax_heaviest_features])
-    print("model training finished with LR_correct_rate:",LR_correct_rate,"svm_correct_rate:",svm_correct_rate,"knn_correct_rate:",knn_correct_rate,"softmax_correct_rate:",softmax_correct_rate)
+    #print("model training finished with LR_correct_rate:",LR_correct_rate,"svm_correct_rate:",svm_correct_rate,"knn_correct_rate:",knn_correct_rate,"softmax_correct_rate:",softmax_correct_rate)
     
     return Ensemble_parameters
 
