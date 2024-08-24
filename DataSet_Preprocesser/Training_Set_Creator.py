@@ -6,6 +6,24 @@ import random
 def Training_set_create(Background=2000, Benign=3000, Bruteforce_XML=2000, Bruteforce=2000, Probing=2000,
                         XMRIGCC_CryptoMiner=2000):
     """
+    Creates training and testing datasets by sampling from preprocessed CSV files.
+
+    Args:
+        Background (int): Number of samples to use from the Background set.
+        Benign (int): Number of samples to use from the Benign set.
+        Bruteforce_XML (int): Number of samples to use from the Bruteforce-XML set.
+        Bruteforce (int): Number of samples to use from the Bruteforce set.
+        Probing (int): Number of samples to use from the Probing set.
+        XMRIGCC_CryptoMiner (int): Number of samples to use from the XMRIGCC CryptoMiner set.
+
+    Returns:
+        tuple: A tuple containing:
+            - features_name (list): The list of feature names.
+            - training_Data_Set (list): The combined training dataset.
+            - testing_Data_Set (list): The testing datasets split by category.
+
+    
+    
     read csv file and return DataFrame
 
     The number of samples which have value "Bruteforce-XML" on feature "traffic_category" is 5145

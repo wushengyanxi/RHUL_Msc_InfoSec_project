@@ -9,35 +9,35 @@ from softmax import Softmax_preprocess_training
 from softmax import softmax_train
 
 def average_dicts(dict_list):
-    # 确保列表不为空
+    # Make sure the list is not empty
     if not dict_list:
         return {}
     
-    # 初始化结果字典
+    # Initialize the result dictionary
     result = {}
     
-    # 遍历列表中的第一个字典的键，设置初始化的平均值
+    # Iterate over the keys of the first dictionary in the list and set the initial average value
     for key in dict_list[0]:
         result[key] = 0.0
 
-    # 累加每个键对应的值
+    # Add up the values ​​corresponding to each key
     for d in dict_list:
         for key, value in d.items():
             result[key] += value
 
-    # 计算每个键的平均值
+    # Calculate the average value for each key
     for key in result:
         result[key] /= len(dict_list)
 
     return result
 
 def top_bottom_keys(data_dict):
-    # 按值排序字典，获取值最大的15个键
+    # Sort the dictionary by value and get the 15 keys with the largest values
     top_keys = sorted(data_dict.items(), key=lambda item: item[1], reverse=True)[:26]
-    # 按值排序字典，获取值最小的15个键
+    # Sort the dictionary by value and get the 15 keys with the smallest values
     bottom_keys = sorted(data_dict.items(), key=lambda item: item[1])[:26]
     
-    # 将元组列表转换成列表列表
+    # Convert a list of tuples to a list of lists
     top_keys = [[key, value] for key, value in top_keys]
     bottom_keys = [[key, value] for key, value in bottom_keys]
     

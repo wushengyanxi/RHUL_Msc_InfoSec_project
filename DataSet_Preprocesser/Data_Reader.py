@@ -33,7 +33,7 @@ def Database_Reader(DataBase_Name, full_read=True, feature_list=None, traffic_ca
     file_path = r"C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\ALLFLOWMETER_HIKARI2021.csv"
     df = pd.read_csv(file_path)
 
-    # 定义traffic_category的映射
+    # Define the mapping of traffic_category
     traffic_category_map = {
         "Benign": 0,
         "Background": 1,
@@ -43,7 +43,7 @@ def Database_Reader(DataBase_Name, full_read=True, feature_list=None, traffic_ca
         "XMRIGCC CryptoMiner": 5
     }
 
-    # 如果是full_read模式
+    # If it is full_read mode
     if full_read:
         if traffic_category:
             features = [col for col in df.columns if col != 'Label']

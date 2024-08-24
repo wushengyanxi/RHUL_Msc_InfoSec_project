@@ -4,7 +4,7 @@ import os
 
 def read_csv_file(file_path):
     """
-    读取csv文件并返回DataFrame
+    read csv file and return DataFrame
     """
     df = pd.read_csv(file_path)
     return df
@@ -12,7 +12,12 @@ def read_csv_file(file_path):
 
 def split_and_save_csv(df, output_dir):
     """
-    根据traffic_category特征分割数据并保存到不同的csv文件中
+    Splits the DataFrame based on the 'traffic_category' feature and saves each subset to a separate CSV file.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame containing the data to be split.
+        output_dir (str): The directory where the CSV files will be saved.
+
     """
     categories = df['traffic_category'].unique()
     for category in categories:

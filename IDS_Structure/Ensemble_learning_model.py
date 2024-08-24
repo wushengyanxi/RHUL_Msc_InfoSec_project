@@ -131,7 +131,7 @@ def Ensemble_Learning_Training(feature_list, Data):
         training_set = k_fold[i][0]
         testing_set = k_fold[i][1]
         X_train, y_train, current_softmax_scale_factors, softmax_heaviest_features = Softmax_preprocess_training(training_set, feature_list)
-        current_softmax_weights = softmax_train(X_train, y_train, learning_rate=0.08, epochs=10000)
+        current_softmax_weights = softmax_train(X_train, y_train, learning_rate=0.4, epochs=30000)
         count = 0
         for sample in testing_set:
             softmax_sample = softmax_each_test_sample_preprocess(sample, current_softmax_scale_factors, feature_list, softmax_heaviest_features)
@@ -156,41 +156,6 @@ def Ensemble_Learning_Decision(param, new_sample, features_list):
     
     benign_count = 0
     malicious_count = 0
-    '''
-    # a backup of runable code
-    
-    if linear_regression_predict(LR_sample[:-1], param[0][0]) == 0:
-        benign_count += 1
-    else:
-        malicious_count += 1
-    
-    if svm_predict(param[1][0], svm_sample[:-1]) == 0:
-        benign_count += 1
-    else:
-        malicious_count += 1
-    
-    if KNN_predict(knn_sample[:-1], param[2][0]) == 0:
-        benign_count += 1
-    else:
-        malicious_count += 1
-    
-    if softmax_predict(softmax_sample[:-1], param[3][0]) == 0:
-        benign_count += 1
-    else:
-        malicious_count += 1
-    
-    predict_decision = 0
-    
-    if benign_count != malicious_count:
-        if benign_count > malicious_count:
-            predict_decision = 0
-        else:
-            predict_decision = 1
-    else:
-        predict_decision = random.randint(0,1)
-    
-    '''
-    
     linear_regression_prediction = linear_regression_predict(LR_sample[:-1], param[0][0])
     if linear_regression_prediction == 0:
         benign_count += 1
@@ -221,14 +186,10 @@ def Ensemble_Learning_Decision(param, new_sample, features_list):
     if linear_regression_prediction == svm_prediction == knn_prediction == softmax_prediction:
         reliable = 1
     
-    if benign_count != malicious_count:
-        if benign_count > malicious_count:
-            predict_decision = 0
-        else:
-            predict_decision = 1
+    if malicious_count == 4:
+        predict_decision = 1
     else:
-        predict_decision = random.randint(0,1)
-        
-        # 其实需要研究一下，如果是平局的话，应该怎么办
+        predict_decision = 0
+
     
     return predict_decision, reliable

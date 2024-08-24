@@ -36,6 +36,8 @@ for m in range(0,20):
                 count += 1
         True_negative += count
         False_negative += len(all_test_sample_benign)-count
+        
+        count = 0
 
         for sample in all_test_sample_malicious:
             predict_decition, reliable = Ensemble_Learning_Decision(Ensemble_param, sample, Features_name)

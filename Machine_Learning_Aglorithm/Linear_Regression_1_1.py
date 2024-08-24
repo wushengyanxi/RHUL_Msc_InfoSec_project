@@ -3,11 +3,39 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.preprocessing import StandardScaler
-import time
 import numbers
 
 
 def LR_preprocess_data(training_set, features_list):
+    """
+    Preprocess the training data for a K-Nearest Neighbors (KNN) model by selecting, reordering, 
+    and scaling features.
+
+    This function selects the most relevant features from the training data, replaces non-numeric 
+    values with zeros, and standardizes the selected features by removing the mean and scaling to 
+    unit variance.
+
+    Parameters:
+    - training_set (list of lists): The complete training dataset, where each inner list 
+                                    represents a sample with features and a label.
+    - features_list (list of str): A list of feature names corresponding to the columns 
+                                   in each sample.
+
+    Returns:
+    - X_train (list of lists): The processed feature data for training, with each inner list 
+                               representing a sample and containing only the selected features.
+    - y_train (list): The list of labels corresponding to each sample in `X_train`.
+    - scale_factors (list of lists): A list containing two lists: the means and standard deviations 
+                                     used for scaling each feature.
+    - heaviest_features (list of str): The list of selected features that were used to create `X_train`.
+
+    Notes:
+    - The function first selects a predefined set of "heaviest" features from the input feature list.
+    - Non-numeric values in the selected features are replaced with zeros to ensure compatibility 
+      with numerical operations.
+    - The features in `X_train` are standardized using `StandardScaler` from scikit-learn, with 
+      the means and standard deviations saved in `scale_factors` for future use.
+    """
     heaviest_features = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count', 
       'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes', 
       'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max', 'flow_pkts_payload.min', 
@@ -72,6 +100,33 @@ class LinearRegressionModel(nn.Module):
 
 
 def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
+    """
+    Train a linear regression model using gradient descent.
+
+    This function trains a linear regression model using the mean squared error loss and 
+    stochastic gradient descent optimizer from the PyTorch library.
+
+    Parameters:
+    - X (array-like): Input features data as a 2D array-like structure.
+    - y (array-like): Target variable data as a 1D array-like structure.
+    - epochs (int): Number of training epochs. Default is 10,000.
+    - learning_rate (float): Learning rate for the optimizer. Default is 0.05.
+
+    Steps:
+    - The function first converts input arrays X and y into PyTorch tensors.
+    - It initializes a linear regression model, a loss function (MSE), and an optimizer (SGD).
+    - The training loop runs for the specified number of epochs. In each epoch:
+        * The model performs a forward pass (calculates predictions).
+        * The loss is computed using the predictions and actual targets.
+        * The optimizer updates the model parameters based on the loss gradient.
+    - Every 1000 epochs, it prints the current epoch number and the loss.
+
+    Returns:
+    - numpy.ndarray: The trained weights of the model after all epochs are completed.
+
+    Notes:
+    - The training duration is printed at the end of the training process.
+    """
     print("linear regression training start")
     # Convert to tensor
     X = torch.tensor(X, dtype=torch.float32)
@@ -85,7 +140,6 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
     optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
     # Training loop
-    start_time = time.time()
     for epoch in range(epochs):
         model.train()
 
@@ -101,10 +155,6 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
         # Print loss for every 100 epochs
         if (epoch + 1) % 1000 == 0:
             print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
-            
-
-    end_time = time.time()
-    #print("Training time: {:.2f} seconds".format(end_time - start_time))
 
     # Extract weights
     weights = model.linear.weight.data.numpy().flatten()
@@ -113,6 +163,18 @@ def train_linear_regression(X, y, epochs=10000, learning_rate=0.05):
 # return a dictionary of weight, key for features name and value for numberic weight
 
 def LR_each_test_sample_preprocess(test_sample, scale_factors, features_list, heaviest_features):
+    """
+    Preprocesses a test sample by selecting and scaling important features.
+
+    Args:
+        test_sample (list): The feature values of the test sample.
+        scale_factors (list of lists): Contains the means and standard deviations for scaling.
+        features_list (list): The list of all features.
+        heaviest_features (list): The most important features to select and process.
+
+    Returns:
+        numpy.ndarray: The processed and scaled test sample.
+    """
     indices = {}
     count = 0
     for feature in heaviest_features:
@@ -144,14 +206,32 @@ def LR_each_test_sample_preprocess(test_sample, scale_factors, features_list, he
 
 
 def linear_regression_predict(test_sample, weights):
+    """
+    Predict the label for a test sample using a trained linear regression model.
+
+    This function calculates a prediction score by multiplying each element of the test sample
+    by its corresponding weight and summing the results. The prediction score is then thresholded
+    to classify the sample as either 1 or 0.
+
+    Parameters:
+    - test_sample (array-like): A single test sample containing features, should have the same
+                                number of elements as there are weights.
+    - weights (array-like): The weights of the trained linear regression model, as a 1D array-like
+                            structure.
+
+    Returns:
+    - int: The predicted label for the test sample, either 1 (positive class) or 0 (negative class).
+
+    Notes:
+    - The threshold for classification is set at -0.1. If the prediction score is greater than or equal to -0.1,
+      the function returns 1, otherwise it returns 0.
+    """
     predict_score = 0
     for i in range(0,len(weights)):
         predict_score += weights[i] * test_sample[i]
 
-    # 第四步：根据预测分数判断预判结果
     predict_label = 1 if predict_score >= -0.1 else 0
 
-    # 第五步：返回预判结果
     return predict_label
 
 
@@ -164,29 +244,3 @@ def one_step_LR(Data, feature_list, epochs=10000, learning_rate=0.001):
     return scale_factors, weight_result, heaviest_features
     # scale_factors: 2D-array
     # weight_result: dictionary
-
-
-'''
-预处理数据函数 (preprocess_data)：
-
-将数据转换为 numpy 数组。
-过滤数值特征并处理非数值特征。
-用列均值替换 NaN 和 Inf 值。
-标准化特征。
-线性回归模型类 (LinearRegressionModel)：
-
-定义线性回归模型结构。
-训练线性回归模型的函数 (train_linear_regression)：
-
-将数据转换为 tensor。
-初始化模型、损失函数和优化器。
-训练模型并监控训练时间和损失值。
-示例数据和执行流程：
-
-生成示例数据。
-进行数据预处理。
-打印预处理后的数据形状。
-训练模型并打印权重。
-通过这个完整的流程，可以确保数据处理和模型训练的正确性。如果训练时间仍然非常短，可以进一步检查数据集和计算资源的使用情况
-
-'''
