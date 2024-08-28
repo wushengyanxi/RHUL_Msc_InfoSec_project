@@ -23,7 +23,7 @@ for m in range(0,1):
     False_positive = 0
     False_negative = 0
 
-    for i in range(0,20):
+    for i in range(0,2):
         print("round: ", i)
         Features_name, Training_Data_Set, Testing_Data_Set = Training_set_create(700,700,1500,1500,1500,1500)
         X_train, y_train, scale_factors, heaviest_features = LR_preprocess_data(Training_Data_Set, Features_name)

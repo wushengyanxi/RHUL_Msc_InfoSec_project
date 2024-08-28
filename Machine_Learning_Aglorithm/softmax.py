@@ -32,13 +32,25 @@ def Softmax_preprocess_training(training_set, features_list):
     - The features in `X_train` are standardized using `StandardScaler` from scikit-learn, with 
       the means and standard deviations saved in `scale_factors` for future use.
     """
-    heaviest_features = ['responp', 'bwd_pkts_payload.min', 'bwd_header_size_min', 'fwd_header_size_min', 'flow_FIN_flag_count',
-      'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'flow_pkts_payload.avg', 'bwd_subflow_bytes',
-      'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
-      'flow_pkts_payload.min', 'bwd_URG_flag_count', 'bwd_pkts_payload.max', 'bwd_data_pkts_tot',
-      'flow_RST_flag_count', 'fwd_pkts_payload.min', 'flow_pkts_payload.std', 'fwd_header_size_tot',
-      'flow_ACK_flag_count', 'fwd_iat.std', 'Label']
+    heaviest_features = ['responp', 'bwd_pkts_payload.min',
+    'bwd_header_size_min', 'fwd_header_size_min', 
+    'flow_FIN_flag_count','down_up_ratio', 
+    'fwd_pkts_payload.max', 'bwd_iat.std', 
+    'flow_pkts_payload.avg', 'bwd_subflow_bytes',
+    'bwd_iat.tot', 'active.tot', 'flow_pkts_payload.tot', 
+    'fwd_pkts_payload.tot', 'bwd_iat.max',
+    'flow_pkts_payload.min', 'bwd_URG_flag_count', 
+    'bwd_pkts_payload.max', 'bwd_data_pkts_tot',
+    'flow_RST_flag_count', 'fwd_pkts_payload.min', 
+    'flow_pkts_payload.std', 'fwd_header_size_tot',
+    'flow_ACK_flag_count', 'fwd_iat.std', 'Label']
     
+    #heaviest_features = ['responp', 'bwd_pkts_payload.min', 'fwd_header_size_min', 
+    #  'down_up_ratio', 'fwd_pkts_payload.max', 'bwd_iat.std', 'bwd_subflow_bytes',
+    #  'bwd_iat.tot', 'fwd_pkts_payload.tot', 'bwd_iat.max',
+    # 'bwd_URG_flag_count', 'bwd_pkts_payload.max', 'bwd_data_pkts_tot',
+    #'fwd_pkts_payload.min',  
+    #  'flow_ACK_flag_count', 'fwd_iat.std', 'Label']
 
     indices = {}
     for feature in heaviest_features:

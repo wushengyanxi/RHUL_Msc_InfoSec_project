@@ -2,7 +2,7 @@ import sys
 sys.path.append(r'C:\Users\wushe\Desktop\RHUL_Msc_InfoSec_project\DataSet_Preprocesser')
 from Training_Set_Creator import Training_set_create
 
-features_name, training_Data_Set, testing_Data_Set = Training_set_create()
+features_name, training_Data_Set, testing_Data_Set = Training_set_create(1500,1500,0,0,0,0)
 
 
 def get_normal_distribution(data_set):
@@ -34,3 +34,4 @@ def get_normal_distribution(data_set):
             std_dev = (sum([(x - mean) ** 2 for x in feature]) / len(feature)) ** 0.5
         normal_distribution.append([mean, std_dev])
     return normal_distribution
+

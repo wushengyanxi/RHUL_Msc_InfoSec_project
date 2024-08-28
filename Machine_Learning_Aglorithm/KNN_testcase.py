@@ -23,7 +23,7 @@ for m in range(0,1):
     False_positive = 0
     False_negative = 0
 
-    for x in range(0,20):
+    for x in range(0,2):
         
         print("round: ", x)
 

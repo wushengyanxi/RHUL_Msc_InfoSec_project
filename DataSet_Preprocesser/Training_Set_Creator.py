@@ -162,6 +162,9 @@ if __name__ == "__main__":
     print(Features_name.index("active.tot"))
     print(Features_name.index("fwd_pkts_payload.tot"))
 
+ 
+    print("the features list is: ", Features_name)
+    print("length of feature, ", len(Features_name))  
 
 
  
